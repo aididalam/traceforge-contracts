@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "complete": true,
+  "network": {
+    "chainId": 9009
+  },
+  "contract": {
+    "address": "0x07bf849fb7e97fa174791bdf3bf9bffa621e145b"
+  },
+  "entity": {
+    "entityId": "0x098dec8d5207ed3dd8a04fd03193c758c650884d39f9d471e6d95336c4a1a569",
+    "organizationId": "0x19cb2dd8952a626d9254af21690cefaf9dba00e701bcd6805ac85a5d18cab11a",
+    "roleId": "0xede905a271a8865b215f3d2d41a77155680c369834a15a16af84bc0d2cb60a26"
+  },
+  "update": {
+    "targetState": "0xf88c6ab7a280e131d28760ae11d8d1b190884b6be85e6222a4d6a37486326540",
+    "metadataHash": "0x8a275375d6dca9355e8acc9db74e8f292c1559954700c31d47a0f2e92b3375fa",
+    "events": {
+      "state": {
+        "eventType": "0xa6c54291c53e4b705b55452ba566a281e3acd346d01626571d4c7b57fc47234c",
+        "evidenceHash": "0x592ff6449357876a942a413c12e6a3dcc12759b1069c41319e1951dcf5f78f5a"
+      },
+      "metadata": {
+        "eventType": "0xe742ee83f1f43642124f5b84a0e57f7c68933241c270792dd22a080c5e61463e",
+        "evidenceHash": "0x88e2c56c706912e00c34bc37eb052ddebec5cf02a50d91827f38e8f9d1532a05"
+      },
+      "quality": {
+        "eventType": "0xa16eb95fd86356b7de1186577e69e741f70f0cdc95302a86c3aca4591d45c816",
+        "evidenceHash": "0x3eb75477355ba56df1b75f9d353b45b68ed11b007194ef90749752743e8e6b0f"
+      }
+    }
+  },
+  "transactions": {
+    "updateEntityState": {
+      "hash": "0x97d046fb934464bc52215119bb76939329c4dc97019c487bcd05e9056113ebaa",
+      "blockNumber": "3802",
+      "gasUsed": "65307"
+    },
+    "updateEntityMetadata": {
+      "hash": "0x9aa2521bb20dd3026583524b03e71a6db63816dcc59894235f44e7f2394f27b0",
+      "blockNumber": "3804",
+      "gasUsed": "65449"
+    },
+    "qualityTrace": {
+      "hash": "0x5923813d1bf316906499a40f635f7eedeb5a0781644627f5e5bd226c27294cc9",
+      "blockNumber": "3806",
+      "gasUsed": "59161"
+    }
+  },
+  "verification": {
+    "stateMatches": true,
+    "metadataMatches": true,
+    "custodyUnchanged": true,
+    "entityOpen": true,
+    "stateEvidenceRecorded": true,
+    "metadataEvidenceRecorded": true,
+    "qualityEvidenceRecorded": true
+  }
+}
