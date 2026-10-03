@@ -1,7 +1,7 @@
 {
-  "name": "contracts",
+  "name": "traceforge-contracts",
   "version": "1.0.0",
-  "description": "cat > README.md <<'EOF' # TraceForge Contracts",
+  "description": "Smart contracts for the TraceForge multi-tenant blockchain traceability platform",
   "main": "index.js",
   "scripts": {
     "test": "hardhat test",
@@ -22,5 +22,9 @@
   },
   "engines": {
     "node": ">=22.13.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aididalam/traceforge-contracts.git"
   }
 }
