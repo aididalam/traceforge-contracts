@@ -1,0 +1,98 @@
+{
+  "schemaVersion": 1,
+  "complete": true,
+  "network": {
+    "chainId": 9009
+  },
+  "contract": {
+    "address": "0x07bf849fb7e97fa174791bdf3bf9bffa621e145b"
+  },
+  "tenant": {
+    "tenantId": "0x99fcc8dda979ffa767f086d31e451e8f244ecdf1334f5af2af4f6b397aff30e2",
+    "tenantAdmin": "0xDAe53bc899819dE8bB8a11343Ccd16e94267707d"
+  },
+  "organization": {
+    "slug": "sandbox-producer",
+    "organizationId": "0x19cb2dd8952a626d9254af21690cefaf9dba00e701bcd6805ac85a5d18cab11a",
+    "metadataHash": "0x305a0be5c6cb16732d0d7f45722830ea9e321830daac90427c961ec495e9600c",
+    "wallet": "0xA3f42A848A3A5675E959426e3c7258d0C7f0C019"
+  },
+  "role": {
+    "slug": "producer",
+    "roleId": "0xede905a271a8865b215f3d2d41a77155680c369834a15a16af84bc0d2cb60a26",
+    "metadataHash": "0x449ee930e4107c016316d1873c90f445387b48f1070c2c41334f63d5db3ac5d4",
+    "capabilities": [
+      "ENTITY_CREATE",
+      "TRACE_RECORD",
+      "STATE_UPDATE",
+      "METADATA_UPDATE",
+      "CUSTODY_TRANSFER",
+      "ENTITY_LINK",
+      "ENTITY_CLOSE"
+    ]
+  },
+  "transactions": {
+    "capabilities": {
+      "ENTITY_CREATE": {
+        "hash": "0x9a486ca161ce61fc97d23b1a0042c84d3aa5102bf4c0c6f902387ede7e787830",
+        "blockNumber": "3495",
+        "gasUsed": "54555"
+      },
+      "TRACE_RECORD": {
+        "hash": "0x635f78248f98000fb239a589d74ef2f019e2c25b9e016529f3c11f574ea203f3",
+        "blockNumber": "3497",
+        "gasUsed": "37467"
+      },
+      "STATE_UPDATE": {
+        "hash": "0x8c64bc6237c88bd465bdb3c75f1b65c3457c5efe39c42d3ad5c26bcba9aa9cef",
+        "blockNumber": "3499",
+        "gasUsed": "37467"
+      },
+      "METADATA_UPDATE": {
+        "hash": "0xb387925fa6e9e44281363811f43aec63ee27ab0934181c2c6d9b27cc622c3912",
+        "blockNumber": "3501",
+        "gasUsed": "37467"
+      },
+      "CUSTODY_TRANSFER": {
+        "hash": "0x6aa259dcc6b4dd808546678e58508afa5ea6346e0a08a8720c98d820ea53fb4a",
+        "blockNumber": "3504",
+        "gasUsed": "37467"
+      },
+      "ENTITY_LINK": {
+        "hash": "0x8c5d173014b91446d62e7a88c30198c231f65e705e391ffc9547997744f30041",
+        "blockNumber": "3506",
+        "gasUsed": "37467"
+      },
+      "ENTITY_CLOSE": {
+        "hash": "0x5c7ce3a9607090149f62f26a814bc5815cd086c1a262bc97963b225190d7561c",
+        "blockNumber": "3508",
+        "gasUsed": "37467"
+      }
+    },
+    "registerOrganization": {
+      "hash": "0x644f49323fd76dd7b8ae9c49ff24aa724b73aacd329ee9160c6aee4ac30d6bd0",
+      "blockNumber": "3487",
+      "gasUsed": "94035"
+    },
+    "bindWallet": {
+      "hash": "0x1cecee2ddec6ec2e4c25f6f439d8bee9b4c6019930207e0944b18bc4070bb7d3",
+      "blockNumber": "3489",
+      "gasUsed": "73608"
+    },
+    "addOrganizationToTenant": {
+      "hash": "0xc057a5747273211fdf1b838169a7746d4026c035845ea347ded2a1ef1384a6e5",
+      "blockNumber": "3491",
+      "gasUsed": "55013"
+    },
+    "createRole": {
+      "hash": "0x078015ce9e60e12facb7f58a8050662ffae6536f8c2d4dec75149988029a6877",
+      "blockNumber": "3493",
+      "gasUsed": "99661"
+    },
+    "assignRoleToOrganization": {
+      "hash": "0x48eebd2ea26dabb0d206fe65ed3fbf1d3fb95d45d00ac79916cffe1418810a78",
+      "blockNumber": "3510",
+      "gasUsed": "60839"
+    }
+  }
+}
