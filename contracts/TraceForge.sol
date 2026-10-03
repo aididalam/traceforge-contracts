@@ -185,6 +185,22 @@ contract TraceForge is Ownable {
         bytes32 entityId
     );
 
+
+    error InvalidEventType();
+    error InvalidEvidenceHash();
+
+    error EntityStateUnchanged(
+        bytes32 tenantId,
+        bytes32 entityId,
+        bytes32 state
+    );
+
+    error EntityMetadataUnchanged(
+        bytes32 tenantId,
+        bytes32 entityId,
+        bytes32 metadataHash
+    );
+
     event TenantCreated(
         bytes32 indexed tenantId,
         bytes32 metadataHash,
@@ -282,6 +298,20 @@ contract TraceForge is Ownable {
         bytes32 metadataHash,
         bytes32 initialState,
         uint64 createdAt
+    );
+
+
+    event TraceRecorded(
+        bytes32 indexed tenantId,
+        bytes32 indexed entityId,
+        bytes32 indexed eventType,
+        bytes32 organizationId,
+        bytes32 roleId,
+        address actor,
+        bytes32 evidenceHash,
+        bytes32 stateAfter,
+        bytes32 metadataHashAfter,
+        uint64 timestamp
     );
 
     constructor() Ownable(msg.sender) {}
@@ -840,6 +870,146 @@ contract TraceForge is Ownable {
     }
 
 
+
+    // ------------------------------------------------------------
+    // Trace, state and metadata evidence
+    // ------------------------------------------------------------
+
+    function recordTrace(
+        bytes32 tenantId,
+        bytes32 roleId,
+        bytes32 entityId,
+        bytes32 eventType,
+        bytes32 evidenceHash
+    ) external {
+        _requireCapability(
+            tenantId,
+            roleId,
+            Capability.TRACE_RECORD
+        );
+
+        _requireEntityExists(
+            tenantId,
+            entityId
+        );
+
+        _validateTraceEvidence(
+            eventType,
+            evidenceHash
+        );
+
+        _emitTrace(
+            tenantId,
+            entityId,
+            roleId,
+            eventType,
+            evidenceHash
+        );
+    }
+
+    function updateEntityState(
+        bytes32 tenantId,
+        bytes32 roleId,
+        bytes32 entityId,
+        bytes32 eventType,
+        bytes32 newState,
+        bytes32 evidenceHash
+    ) external {
+        _requireCapability(
+            tenantId,
+            roleId,
+            Capability.STATE_UPDATE
+        );
+
+        _requireEntityExists(
+            tenantId,
+            entityId
+        );
+
+        _validateTraceEvidence(
+            eventType,
+            evidenceHash
+        );
+
+        if (newState == bytes32(0)) {
+            revert InvalidEntityState();
+        }
+
+        Entity storage entity =
+            entities[tenantId][entityId];
+
+        if (entity.currentState == newState) {
+            revert EntityStateUnchanged(
+                tenantId,
+                entityId,
+                newState
+            );
+        }
+
+        entity.currentState = newState;
+        entity.updatedAt = uint64(block.timestamp);
+
+        _emitTrace(
+            tenantId,
+            entityId,
+            roleId,
+            eventType,
+            evidenceHash
+        );
+    }
+
+    function updateEntityMetadata(
+        bytes32 tenantId,
+        bytes32 roleId,
+        bytes32 entityId,
+        bytes32 eventType,
+        bytes32 newMetadataHash,
+        bytes32 evidenceHash
+    ) external {
+        _requireCapability(
+            tenantId,
+            roleId,
+            Capability.METADATA_UPDATE
+        );
+
+        _requireEntityExists(
+            tenantId,
+            entityId
+        );
+
+        _validateTraceEvidence(
+            eventType,
+            evidenceHash
+        );
+
+        if (newMetadataHash == bytes32(0)) {
+            revert InvalidMetadataHash();
+        }
+
+        Entity storage entity =
+            entities[tenantId][entityId];
+
+        if (entity.metadataHash == newMetadataHash) {
+            revert EntityMetadataUnchanged(
+                tenantId,
+                entityId,
+                newMetadataHash
+            );
+        }
+
+        entity.metadataHash = newMetadataHash;
+        entity.updatedAt = uint64(block.timestamp);
+
+        _emitTrace(
+            tenantId,
+            entityId,
+            roleId,
+            eventType,
+            evidenceHash
+        );
+    }
+
+
     // Read API
     // ------------------------------------------------------------
 
@@ -1096,6 +1266,61 @@ contract TraceForge is Ownable {
 
     // Internal validation
     // ------------------------------------------------------------
+
+
+
+    function _requireEntityExists(
+        bytes32 tenantId,
+        bytes32 entityId
+    ) internal view {
+        if (!entities[tenantId][entityId].exists) {
+            revert EntityNotFound(
+                tenantId,
+                entityId
+            );
+        }
+    }
+
+    function _validateTraceEvidence(
+        bytes32 eventType,
+        bytes32 evidenceHash
+    ) internal pure {
+        if (eventType == bytes32(0)) {
+            revert InvalidEventType();
+        }
+
+        if (evidenceHash == bytes32(0)) {
+            revert InvalidEvidenceHash();
+        }
+    }
+
+    function _emitTrace(
+        bytes32 tenantId,
+        bytes32 entityId,
+        bytes32 roleId,
+        bytes32 eventType,
+        bytes32 evidenceHash
+    ) internal {
+        Entity storage entity =
+            entities[tenantId][entityId];
+
+        bytes32 organizationId =
+            walletBindings[msg.sender]
+                .organizationId;
+
+        emit TraceRecorded(
+            tenantId,
+            entityId,
+            eventType,
+            organizationId,
+            roleId,
+            msg.sender,
+            evidenceHash,
+            entity.currentState,
+            entity.metadataHash,
+            uint64(block.timestamp)
+        );
+    }
 
 
     function _requireActiveTenantMembership(
