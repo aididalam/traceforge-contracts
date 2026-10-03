@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "revision": 2,
+  "slug": "sandbox-batch-001",
+  "name": "Sandbox Batch 001",
+  "environment": "development",
+  "entityType": "BATCH",
+  "packagingStatus": "packed",
+  "units": 100
+}
