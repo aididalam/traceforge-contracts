@@ -12,6 +12,7 @@ export default defineConfig({
         runs: 200,
       },
 
+      viaIR: true,
       evmVersion: "london",
     },
   },

@@ -75,6 +75,17 @@ contract TraceForge is Ownable {
         bool exists;
     }
 
+
+    struct EntityLink {
+        bytes32 sourceEntityId;
+        bytes32 targetEntityId;
+        bytes32 linkType;
+        uint64 createdAt;
+        uint64 updatedAt;
+        bool exists;
+        bool active;
+    }
+
     mapping(bytes32 => Tenant) private tenants;
 
     mapping(bytes32 => Organization) private organizations;
@@ -107,6 +118,10 @@ contract TraceForge is Ownable {
         bytes32 =>
             mapping(bytes32 => CustodyTransfer)
     ) private pendingCustodyTransfers;
+
+
+    mapping(bytes32 => mapping(bytes32 => EntityLink))
+        private entityLinks;
 
     error InvalidTenantId();
     error InvalidOrganizationId();
@@ -246,6 +261,29 @@ contract TraceForge is Ownable {
     error CustodyChangedSinceProposal(
         bytes32 tenantId,
         bytes32 entityId
+    );
+
+
+    error InvalidLinkType();
+
+    error SelfEntityLinkNotAllowed(
+        bytes32 entityId
+    );
+
+    error EntityLinkAlreadyExists(
+        bytes32 tenantId,
+        bytes32 linkId
+    );
+
+    error EntityLinkNotFound(
+        bytes32 tenantId,
+        bytes32 linkId
+    );
+
+    error EntityLinkStatusUnchanged(
+        bytes32 tenantId,
+        bytes32 linkId,
+        bool active
     );
 
     event TenantCreated(
@@ -409,6 +447,36 @@ contract TraceForge is Ownable {
         bytes32 eventType,
         bytes32 evidenceHash,
         uint64 acceptedAt
+    );
+
+
+    event EntityLinkCreated(
+        bytes32 indexed tenantId,
+        bytes32 indexed linkId,
+        bytes32 indexed sourceEntityId,
+        bytes32 targetEntityId,
+        bytes32 linkType,
+        bytes32 organizationId,
+        bytes32 roleId,
+        address actor,
+        bytes32 eventType,
+        bytes32 evidenceHash,
+        uint64 createdAt
+    );
+
+    event EntityLinkStatusChanged(
+        bytes32 indexed tenantId,
+        bytes32 indexed linkId,
+        bytes32 indexed sourceEntityId,
+        bytes32 targetEntityId,
+        bytes32 linkType,
+        bool active,
+        bytes32 organizationId,
+        bytes32 roleId,
+        address actor,
+        bytes32 eventType,
+        bytes32 evidenceHash,
+        uint64 updatedAt
     );
 
     constructor() Ownable(msg.sender) {}
@@ -1458,6 +1526,204 @@ contract TraceForge is Ownable {
     }
 
 
+
+    // ------------------------------------------------------------
+    // Entity relationships
+    // ------------------------------------------------------------
+
+    function createEntityLink(
+        bytes32 tenantId,
+        bytes32 roleId,
+        bytes32 sourceEntityId,
+        bytes32 targetEntityId,
+        bytes32 linkType,
+        bytes32 eventType,
+        bytes32 evidenceHash
+    ) external returns (bytes32 linkId) {
+        _requireCapability(
+            tenantId,
+            roleId,
+            Capability.ENTITY_LINK
+        );
+
+        _requireEntityExists(
+            tenantId,
+            sourceEntityId
+        );
+
+        _requireEntityExists(
+            tenantId,
+            targetEntityId
+        );
+
+        _validateTraceEvidence(
+            eventType,
+            evidenceHash
+        );
+
+        if (linkType == bytes32(0)) {
+            revert InvalidLinkType();
+        }
+
+        if (sourceEntityId == targetEntityId) {
+            revert SelfEntityLinkNotAllowed(
+                sourceEntityId
+            );
+        }
+
+        bytes32 organizationId =
+            _requireCurrentEntityCustodian(
+                tenantId,
+                sourceEntityId
+            );
+
+        linkId = _entityLinkId(
+            tenantId,
+            sourceEntityId,
+            targetEntityId,
+            linkType
+        );
+
+        if (
+            entityLinks[
+                tenantId
+            ][
+                linkId
+            ].exists
+        ) {
+            revert EntityLinkAlreadyExists(
+                tenantId,
+                linkId
+            );
+        }
+
+        uint64 timestamp =
+            uint64(block.timestamp);
+
+        entityLinks[
+            tenantId
+        ][
+            linkId
+        ] = EntityLink({
+            sourceEntityId:
+                sourceEntityId,
+            targetEntityId:
+                targetEntityId,
+            linkType:
+                linkType,
+            createdAt:
+                timestamp,
+            updatedAt:
+                timestamp,
+            exists:
+                true,
+            active:
+                true
+        });
+
+        emit EntityLinkCreated(
+            tenantId,
+            linkId,
+            sourceEntityId,
+            targetEntityId,
+            linkType,
+            organizationId,
+            roleId,
+            msg.sender,
+            eventType,
+            evidenceHash,
+            timestamp
+        );
+    }
+
+    function setEntityLinkActive(
+        bytes32 tenantId,
+        bytes32 roleId,
+        bytes32 sourceEntityId,
+        bytes32 targetEntityId,
+        bytes32 linkType,
+        bool active,
+        bytes32 eventType,
+        bytes32 evidenceHash
+    ) external {
+        _requireCapability(
+            tenantId,
+            roleId,
+            Capability.ENTITY_LINK
+        );
+
+        _requireEntityExists(
+            tenantId,
+            sourceEntityId
+        );
+
+        _requireEntityExists(
+            tenantId,
+            targetEntityId
+        );
+
+        _validateTraceEvidence(
+            eventType,
+            evidenceHash
+        );
+
+        bytes32 organizationId =
+            _requireCurrentEntityCustodian(
+                tenantId,
+                sourceEntityId
+            );
+
+        bytes32 linkId =
+            _entityLinkId(
+                tenantId,
+                sourceEntityId,
+                targetEntityId,
+                linkType
+            );
+
+        EntityLink storage entityLink =
+            entityLinks[
+                tenantId
+            ][
+                linkId
+            ];
+
+        if (!entityLink.exists) {
+            revert EntityLinkNotFound(
+                tenantId,
+                linkId
+            );
+        }
+
+        if (entityLink.active == active) {
+            revert EntityLinkStatusUnchanged(
+                tenantId,
+                linkId,
+                active
+            );
+        }
+
+        entityLink.active = active;
+        entityLink.updatedAt =
+            uint64(block.timestamp);
+
+        emit EntityLinkStatusChanged(
+            tenantId,
+            linkId,
+            sourceEntityId,
+            targetEntityId,
+            linkType,
+            active,
+            organizationId,
+            roleId,
+            msg.sender,
+            eventType,
+            evidenceHash,
+            entityLink.updatedAt
+        );
+    }
+
+
     // Read API
     // ------------------------------------------------------------
 
@@ -1753,9 +2019,130 @@ contract TraceForge is Ownable {
     }
 
 
+
+    function computeEntityLinkId(
+        bytes32 tenantId,
+        bytes32 sourceEntityId,
+        bytes32 targetEntityId,
+        bytes32 linkType
+    ) external pure returns (bytes32) {
+        return _entityLinkId(
+            tenantId,
+            sourceEntityId,
+            targetEntityId,
+            linkType
+        );
+    }
+
+    function getEntityLink(
+        bytes32 tenantId,
+        bytes32 sourceEntityId,
+        bytes32 targetEntityId,
+        bytes32 linkType
+    ) external view returns (EntityLink memory) {
+        bytes32 linkId =
+            _entityLinkId(
+                tenantId,
+                sourceEntityId,
+                targetEntityId,
+                linkType
+            );
+
+        EntityLink memory entityLink =
+            entityLinks[
+                tenantId
+            ][
+                linkId
+            ];
+
+        if (!entityLink.exists) {
+            revert EntityLinkNotFound(
+                tenantId,
+                linkId
+            );
+        }
+
+        return entityLink;
+    }
+
+    function entityLinkExists(
+        bytes32 tenantId,
+        bytes32 sourceEntityId,
+        bytes32 targetEntityId,
+        bytes32 linkType
+    ) external view returns (bool) {
+        bytes32 linkId =
+            _entityLinkId(
+                tenantId,
+                sourceEntityId,
+                targetEntityId,
+                linkType
+            );
+
+        return entityLinks[
+            tenantId
+        ][
+            linkId
+        ].exists;
+    }
+
+
     // Internal validation
     // ------------------------------------------------------------
 
+
+
+
+    function _entityLinkId(
+        bytes32 tenantId,
+        bytes32 sourceEntityId,
+        bytes32 targetEntityId,
+        bytes32 linkType
+    ) internal pure returns (bytes32) {
+        return keccak256(
+            abi.encode(
+                tenantId,
+                sourceEntityId,
+                targetEntityId,
+                linkType
+            )
+        );
+    }
+
+    function _requireCurrentEntityCustodian(
+        bytes32 tenantId,
+        bytes32 entityId
+    ) internal view returns (
+        bytes32 organizationId
+    ) {
+        _requireEntityExists(
+            tenantId,
+            entityId
+        );
+
+        organizationId =
+            walletBindings[msg.sender]
+                .organizationId;
+
+        bytes32 currentCustodian =
+            entities[
+                tenantId
+            ][
+                entityId
+            ].currentCustodian;
+
+        if (
+            organizationId !=
+            currentCustodian
+        ) {
+            revert NotCurrentCustodian(
+                tenantId,
+                entityId,
+                currentCustodian,
+                organizationId
+            );
+        }
+    }
 
 
     function _requireEntityExists(
