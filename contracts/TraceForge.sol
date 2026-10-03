@@ -54,6 +54,18 @@ contract TraceForge is Ownable {
         uint64 assignedAt;
     }
 
+
+    struct Entity {
+        bytes32 entityType;
+        bytes32 metadataHash;
+        bytes32 currentState;
+        bytes32 currentCustodian;
+        uint64 createdAt;
+        uint64 updatedAt;
+        bool exists;
+        bool closed;
+    }
+
     mapping(bytes32 => Tenant) private tenants;
 
     mapping(bytes32 => Organization) private organizations;
@@ -76,6 +88,10 @@ contract TraceForge is Ownable {
                     mapping(bytes32 => RoleAssignment)
             )
     ) private organizationRoles;
+
+
+    mapping(bytes32 => mapping(bytes32 => Entity))
+        private entities;
 
     error InvalidTenantId();
     error InvalidOrganizationId();
@@ -151,6 +167,22 @@ contract TraceForge is Ownable {
         bytes32 roleId,
         Capability capability,
         address wallet
+    );
+
+
+    error InvalidEntityId();
+    error InvalidEntityType();
+    error InvalidEntityState();
+    error InvalidMetadataHash();
+
+    error EntityAlreadyExists(
+        bytes32 tenantId,
+        bytes32 entityId
+    );
+
+    error EntityNotFound(
+        bytes32 tenantId,
+        bytes32 entityId
     );
 
     event TenantCreated(
@@ -238,6 +270,18 @@ contract TraceForge is Ownable {
         bytes32 indexed organizationId,
         bytes32 indexed roleId,
         bool active
+    );
+
+
+    event EntityCreated(
+        bytes32 indexed tenantId,
+        bytes32 indexed entityId,
+        bytes32 indexed entityType,
+        bytes32 organizationId,
+        address actor,
+        bytes32 metadataHash,
+        bytes32 initialState,
+        uint64 createdAt
     );
 
     constructor() Ownable(msg.sender) {}
@@ -723,6 +767,79 @@ contract TraceForge is Ownable {
     }
 
 
+
+    // ------------------------------------------------------------
+    // Entities
+    // ------------------------------------------------------------
+
+    function createEntity(
+        bytes32 tenantId,
+        bytes32 roleId,
+        bytes32 entityId,
+        bytes32 entityType,
+        bytes32 metadataHash,
+        bytes32 initialState
+    ) external {
+        if (entityId == bytes32(0)) {
+            revert InvalidEntityId();
+        }
+
+        if (entityType == bytes32(0)) {
+            revert InvalidEntityType();
+        }
+
+        if (metadataHash == bytes32(0)) {
+            revert InvalidMetadataHash();
+        }
+
+        if (initialState == bytes32(0)) {
+            revert InvalidEntityState();
+        }
+
+        if (entities[tenantId][entityId].exists) {
+            revert EntityAlreadyExists(
+                tenantId,
+                entityId
+            );
+        }
+
+        _requireCapability(
+            tenantId,
+            roleId,
+            Capability.ENTITY_CREATE
+        );
+
+        bytes32 organizationId =
+            walletBindings[msg.sender]
+                .organizationId;
+
+        uint64 timestamp =
+            uint64(block.timestamp);
+
+        entities[tenantId][entityId] = Entity({
+            entityType: entityType,
+            metadataHash: metadataHash,
+            currentState: initialState,
+            currentCustodian: organizationId,
+            createdAt: timestamp,
+            updatedAt: timestamp,
+            exists: true,
+            closed: false
+        });
+
+        emit EntityCreated(
+            tenantId,
+            entityId,
+            entityType,
+            organizationId,
+            msg.sender,
+            metadataHash,
+            initialState,
+            timestamp
+        );
+    }
+
+
     // Read API
     // ------------------------------------------------------------
 
@@ -948,6 +1065,32 @@ contract TraceForge is Ownable {
                 role.capabilityMask &
                 _capabilityBit(capability)
             ) != 0;
+    }
+
+
+
+    function getEntity(
+        bytes32 tenantId,
+        bytes32 entityId
+    ) external view returns (Entity memory) {
+        Entity memory entity =
+            entities[tenantId][entityId];
+
+        if (!entity.exists) {
+            revert EntityNotFound(
+                tenantId,
+                entityId
+            );
+        }
+
+        return entity;
+    }
+
+    function entityExists(
+        bytes32 tenantId,
+        bytes32 entityId
+    ) external view returns (bool) {
+        return entities[tenantId][entityId].exists;
     }
 
 
