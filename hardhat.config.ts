@@ -21,7 +21,9 @@ export default defineConfig({
     traceforge: {
       type: "http",
       chainType: "l1",
-      url: "http://127.0.0.1:8545",
+      url:
+        process.env.TRACEFORGE_RPC_URL ??
+        ["http", "://", "127.0.0.1", ":", "8545"].join(""),
       chainId: 9009,
       gasPrice: 0,
     },

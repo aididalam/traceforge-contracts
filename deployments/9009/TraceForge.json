@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "network": {
+    "name": "TraceForge",
+    "chainId": 9009
+  },
+  "contract": {
+    "name": "TraceForge",
+    "address": "0x07bf849fb7e97fa174791bdf3bf9bffa621e145b",
+    "owner": "0x41903e34609e938BF6B452A47E1F87aeFB456AaD",
+    "pendingOwner": "0x0000000000000000000000000000000000000000"
+  },
+  "deployment": {
+    "deployer": "0x41903e34609e938BF6B452A47E1F87aeFB456AaD",
+    "transactionHash": "0x7f2c9048055fef11cd05dc0e808ea27d300259c11e73668f436666b4281bdd89",
+    "blockNumber": "3027",
+    "blockTimestamp": "1791060081",
+    "deployedAt": "2026-10-03T20:41:21.000Z",
+    "gasUsed": "2979081",
+    "effectiveGasPrice": "0"
+  },
+  "artifact": {
+    "creationBytes": 13561,
+    "runtimeBytes": 13430,
+    "expectedRuntimeHash": "0x193b52381d4d3b816bf5f1a51bf2a5116da2ef04964afefe38e15239e900fef8",
+    "deployedRuntimeHash": "0x193b52381d4d3b816bf5f1a51bf2a5116da2ef04964afefe38e15239e900fef8",
+    "runtimeMatches": true
+  }
+}
