@@ -1,0 +1,8 @@
+{
+  "schemaVersion": 1,
+  "event": "ITEM_CLOSED",
+  "entity": "sandbox-item-001",
+  "actor": "sandbox-distributor",
+  "reason": "sandbox terminal lifecycle verification",
+  "environment": "development"
+}
