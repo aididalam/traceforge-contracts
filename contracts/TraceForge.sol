@@ -29,6 +29,31 @@ contract TraceForge is Ownable {
         uint64 joinedAt;
     }
 
+
+    enum Capability {
+        ENTITY_CREATE,
+        TRACE_RECORD,
+        STATE_UPDATE,
+        METADATA_UPDATE,
+        CUSTODY_TRANSFER,
+        ENTITY_LINK,
+        ENTITY_CLOSE
+    }
+
+    struct Role {
+        bool exists;
+        bool active;
+        bytes32 metadataHash;
+        uint256 capabilityMask;
+        uint64 createdAt;
+    }
+
+    struct RoleAssignment {
+        bool exists;
+        bool active;
+        uint64 assignedAt;
+    }
+
     mapping(bytes32 => Tenant) private tenants;
 
     mapping(bytes32 => Organization) private organizations;
@@ -39,6 +64,18 @@ contract TraceForge is Ownable {
 
     mapping(bytes32 => mapping(bytes32 => TenantMembership))
         private tenantMemberships;
+
+
+    mapping(bytes32 => mapping(bytes32 => Role))
+        private roles;
+
+    mapping(
+        bytes32 =>
+            mapping(
+                bytes32 =>
+                    mapping(bytes32 => RoleAssignment)
+            )
+    ) private organizationRoles;
 
     error InvalidTenantId();
     error InvalidOrganizationId();
@@ -72,6 +109,48 @@ contract TraceForge is Ownable {
     error TenantMembershipNotFound(
         bytes32 tenantId,
         bytes32 organizationId
+    );
+
+
+    error TenantMembershipInactive(
+        bytes32 tenantId,
+        bytes32 organizationId
+    );
+
+    error InvalidRoleId();
+
+    error RoleAlreadyExists(
+        bytes32 tenantId,
+        bytes32 roleId
+    );
+
+    error RoleNotFound(
+        bytes32 tenantId,
+        bytes32 roleId
+    );
+
+    error RoleInactive(
+        bytes32 tenantId,
+        bytes32 roleId
+    );
+
+    error OrganizationRoleAlreadyExists(
+        bytes32 tenantId,
+        bytes32 organizationId,
+        bytes32 roleId
+    );
+
+    error OrganizationRoleNotFound(
+        bytes32 tenantId,
+        bytes32 organizationId,
+        bytes32 roleId
+    );
+
+    error MissingCapability(
+        bytes32 tenantId,
+        bytes32 roleId,
+        Capability capability,
+        address wallet
     );
 
     event TenantCreated(
@@ -123,6 +202,41 @@ contract TraceForge is Ownable {
     event TenantMembershipStatusChanged(
         bytes32 indexed tenantId,
         bytes32 indexed organizationId,
+        bool active
+    );
+
+
+    event RoleCreated(
+        bytes32 indexed tenantId,
+        bytes32 indexed roleId,
+        bytes32 metadataHash,
+        uint64 createdAt
+    );
+
+    event RoleStatusChanged(
+        bytes32 indexed tenantId,
+        bytes32 indexed roleId,
+        bool active
+    );
+
+    event RoleCapabilityChanged(
+        bytes32 indexed tenantId,
+        bytes32 indexed roleId,
+        Capability indexed capability,
+        bool enabled
+    );
+
+    event OrganizationRoleAssigned(
+        bytes32 indexed tenantId,
+        bytes32 indexed organizationId,
+        bytes32 indexed roleId,
+        uint64 assignedAt
+    );
+
+    event OrganizationRoleStatusChanged(
+        bytes32 indexed tenantId,
+        bytes32 indexed organizationId,
+        bytes32 indexed roleId,
         bool active
     );
 
@@ -399,6 +513,216 @@ contract TraceForge is Ownable {
     }
 
     // ------------------------------------------------------------
+
+    // ------------------------------------------------------------
+    // Roles and capabilities
+    // ------------------------------------------------------------
+
+    function createRole(
+        bytes32 tenantId,
+        bytes32 roleId,
+        bytes32 metadataHash
+    ) external onlyTenantAdmin(tenantId) {
+        _requireTenantActive(tenantId);
+
+        if (roleId == bytes32(0)) {
+            revert InvalidRoleId();
+        }
+
+        if (roles[tenantId][roleId].exists) {
+            revert RoleAlreadyExists(
+                tenantId,
+                roleId
+            );
+        }
+
+        uint64 createdAt = uint64(block.timestamp);
+
+        roles[tenantId][roleId] = Role({
+            exists: true,
+            active: true,
+            metadataHash: metadataHash,
+            capabilityMask: 0,
+            createdAt: createdAt
+        });
+
+        emit RoleCreated(
+            tenantId,
+            roleId,
+            metadataHash,
+            createdAt
+        );
+    }
+
+    function setRoleActive(
+        bytes32 tenantId,
+        bytes32 roleId,
+        bool active
+    ) external onlyTenantAdmin(tenantId) {
+        _requireRoleExists(
+            tenantId,
+            roleId
+        );
+
+        if (active) {
+            _requireTenantActive(tenantId);
+        }
+
+        roles[tenantId][roleId].active = active;
+
+        emit RoleStatusChanged(
+            tenantId,
+            roleId,
+            active
+        );
+    }
+
+    function setRoleCapability(
+        bytes32 tenantId,
+        bytes32 roleId,
+        Capability capability,
+        bool enabled
+    ) external onlyTenantAdmin(tenantId) {
+        _requireTenantActive(tenantId);
+
+        _requireRoleExists(
+            tenantId,
+            roleId
+        );
+
+        uint256 bit = _capabilityBit(
+            capability
+        );
+
+        if (enabled) {
+            roles[tenantId][roleId]
+                .capabilityMask |= bit;
+        } else {
+            roles[tenantId][roleId]
+                .capabilityMask &= ~bit;
+        }
+
+        emit RoleCapabilityChanged(
+            tenantId,
+            roleId,
+            capability,
+            enabled
+        );
+    }
+
+    function assignRoleToOrganization(
+        bytes32 tenantId,
+        bytes32 organizationId,
+        bytes32 roleId
+    ) external onlyTenantAdmin(tenantId) {
+        _requireTenantActive(tenantId);
+
+        _requireOrganizationActive(
+            organizationId
+        );
+
+        _requireActiveTenantMembership(
+            tenantId,
+            organizationId
+        );
+
+        _requireRoleActive(
+            tenantId,
+            roleId
+        );
+
+        RoleAssignment storage assignment =
+            organizationRoles[
+                tenantId
+            ][
+                organizationId
+            ][
+                roleId
+            ];
+
+        if (assignment.exists) {
+            revert OrganizationRoleAlreadyExists(
+                tenantId,
+                organizationId,
+                roleId
+            );
+        }
+
+        uint64 assignedAt =
+            uint64(block.timestamp);
+
+        organizationRoles[
+            tenantId
+        ][
+            organizationId
+        ][
+            roleId
+        ] = RoleAssignment({
+            exists: true,
+            active: true,
+            assignedAt: assignedAt
+        });
+
+        emit OrganizationRoleAssigned(
+            tenantId,
+            organizationId,
+            roleId,
+            assignedAt
+        );
+    }
+
+    function setOrganizationRoleActive(
+        bytes32 tenantId,
+        bytes32 organizationId,
+        bytes32 roleId,
+        bool active
+    ) external onlyTenantAdmin(tenantId) {
+        RoleAssignment storage assignment =
+            organizationRoles[
+                tenantId
+            ][
+                organizationId
+            ][
+                roleId
+            ];
+
+        if (!assignment.exists) {
+            revert OrganizationRoleNotFound(
+                tenantId,
+                organizationId,
+                roleId
+            );
+        }
+
+        if (active) {
+            _requireTenantActive(tenantId);
+
+            _requireOrganizationActive(
+                organizationId
+            );
+
+            _requireActiveTenantMembership(
+                tenantId,
+                organizationId
+            );
+
+            _requireRoleActive(
+                tenantId,
+                roleId
+            );
+        }
+
+        assignment.active = active;
+
+        emit OrganizationRoleStatusChanged(
+            tenantId,
+            organizationId,
+            roleId,
+            active
+        );
+    }
+
+
     // Read API
     // ------------------------------------------------------------
 
@@ -490,8 +814,230 @@ contract TraceForge is Ownable {
     }
 
     // ------------------------------------------------------------
+
+    function getRole(
+        bytes32 tenantId,
+        bytes32 roleId
+    ) external view returns (Role memory) {
+        _requireRoleExists(
+            tenantId,
+            roleId
+        );
+
+        return roles[tenantId][roleId];
+    }
+
+    function getOrganizationRoleAssignment(
+        bytes32 tenantId,
+        bytes32 organizationId,
+        bytes32 roleId
+    ) external view returns (
+        RoleAssignment memory
+    ) {
+        RoleAssignment memory assignment =
+            organizationRoles[
+                tenantId
+            ][
+                organizationId
+            ][
+                roleId
+            ];
+
+        if (!assignment.exists) {
+            revert OrganizationRoleNotFound(
+                tenantId,
+                organizationId,
+                roleId
+            );
+        }
+
+        return assignment;
+    }
+
+    function roleHasCapability(
+        bytes32 tenantId,
+        bytes32 roleId,
+        Capability capability
+    ) external view returns (bool) {
+        Role memory role =
+            roles[tenantId][roleId];
+
+        if (!role.exists || !role.active) {
+            return false;
+        }
+
+        return
+            (
+                role.capabilityMask &
+                _capabilityBit(capability)
+            ) != 0;
+    }
+
+    function hasCapability(
+        bytes32 tenantId,
+        address wallet,
+        bytes32 roleId,
+        Capability capability
+    ) public view returns (bool) {
+        WalletBinding memory binding =
+            walletBindings[wallet];
+
+        if (
+            binding.organizationId == bytes32(0) ||
+            !binding.active
+        ) {
+            return false;
+        }
+
+        bytes32 organizationId =
+            binding.organizationId;
+
+        if (
+            !tenants[tenantId].exists ||
+            !tenants[tenantId].active
+        ) {
+            return false;
+        }
+
+        if (
+            !organizations[organizationId].exists ||
+            !organizations[organizationId].active
+        ) {
+            return false;
+        }
+
+        TenantMembership memory membership =
+            tenantMemberships[
+                tenantId
+            ][
+                organizationId
+            ];
+
+        if (
+            !membership.exists ||
+            !membership.active
+        ) {
+            return false;
+        }
+
+        Role memory role =
+            roles[tenantId][roleId];
+
+        if (!role.exists || !role.active) {
+            return false;
+        }
+
+        RoleAssignment memory assignment =
+            organizationRoles[
+                tenantId
+            ][
+                organizationId
+            ][
+                roleId
+            ];
+
+        if (
+            !assignment.exists ||
+            !assignment.active
+        ) {
+            return false;
+        }
+
+        return
+            (
+                role.capabilityMask &
+                _capabilityBit(capability)
+            ) != 0;
+    }
+
+
     // Internal validation
     // ------------------------------------------------------------
+
+
+    function _requireActiveTenantMembership(
+        bytes32 tenantId,
+        bytes32 organizationId
+    ) internal view {
+        TenantMembership memory membership =
+            tenantMemberships[
+                tenantId
+            ][
+                organizationId
+            ];
+
+        if (!membership.exists) {
+            revert TenantMembershipNotFound(
+                tenantId,
+                organizationId
+            );
+        }
+
+        if (!membership.active) {
+            revert TenantMembershipInactive(
+                tenantId,
+                organizationId
+            );
+        }
+    }
+
+    function _requireRoleExists(
+        bytes32 tenantId,
+        bytes32 roleId
+    ) internal view {
+        if (!roles[tenantId][roleId].exists) {
+            revert RoleNotFound(
+                tenantId,
+                roleId
+            );
+        }
+    }
+
+    function _requireRoleActive(
+        bytes32 tenantId,
+        bytes32 roleId
+    ) internal view {
+        _requireRoleExists(
+            tenantId,
+            roleId
+        );
+
+        if (!roles[tenantId][roleId].active) {
+            revert RoleInactive(
+                tenantId,
+                roleId
+            );
+        }
+    }
+
+    function _capabilityBit(
+        Capability capability
+    ) internal pure returns (uint256) {
+        return uint256(1) << uint8(capability);
+    }
+
+    function _requireCapability(
+        bytes32 tenantId,
+        bytes32 roleId,
+        Capability capability
+    ) internal view {
+        if (
+            !hasCapability(
+                tenantId,
+                msg.sender,
+                roleId,
+                capability
+            )
+        ) {
+            revert MissingCapability(
+                tenantId,
+                roleId,
+                capability,
+                msg.sender
+            );
+        }
+    }
+
 
     function _requireTenantExists(
         bytes32 tenantId
