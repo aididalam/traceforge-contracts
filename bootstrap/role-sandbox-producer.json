@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "slug": "producer",
+  "name": "Sandbox Producer Role",
+  "environment": "development",
+  "capabilities": [
+    "ENTITY_CREATE",
+    "TRACE_RECORD",
+    "STATE_UPDATE",
+    "METADATA_UPDATE",
+    "CUSTODY_TRANSFER",
+    "ENTITY_LINK",
+    "ENTITY_CLOSE"
+  ]
+}

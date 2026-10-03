@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1,
+  "slug": "sandbox-producer",
+  "name": "Sandbox Producer",
+  "environment": "development",
+  "organizationType": "producer"
+}
