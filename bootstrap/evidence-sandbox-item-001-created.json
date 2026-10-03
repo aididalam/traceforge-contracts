@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1,
+  "event": "ITEM_CREATED",
+  "entity": "sandbox-item-001",
+  "actor": "sandbox-distributor",
+  "environment": "development"
+}

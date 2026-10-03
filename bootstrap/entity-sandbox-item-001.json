@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "slug": "sandbox-item-001",
+  "name": "Sandbox Item 001",
+  "environment": "development",
+  "entityType": "ITEM",
+  "initialState": "CREATED",
+  "parentBusinessReference": "sandbox-batch-001"
+}
