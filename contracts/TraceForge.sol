@@ -2,8 +2,9 @@
 pragma solidity ^0.8.28;
 
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
+import {Ownable2Step} from "@openzeppelin/contracts/access/Ownable2Step.sol";
 
-contract TraceForge is Ownable {
+contract TraceForge is Ownable2Step {
     struct Tenant {
         bool exists;
         bool active;
@@ -122,6 +123,8 @@ contract TraceForge is Ownable {
 
     mapping(bytes32 => mapping(bytes32 => EntityLink))
         private entityLinks;
+
+    error OwnershipRenounceDisabled();
 
     error InvalidTenantId();
     error InvalidOrganizationId();
@@ -503,6 +506,18 @@ contract TraceForge is Ownable {
     );
 
     constructor() Ownable(msg.sender) {}
+
+    // ------------------------------------------------------------
+    // Platform ownership
+    // ------------------------------------------------------------
+
+    function renounceOwnership()
+        public
+        override
+        onlyOwner
+    {
+        revert OwnershipRenounceDisabled();
+    }
 
     modifier onlyTenantAdmin(bytes32 tenantId) {
         _requireTenantExists(tenantId);
