@@ -465,6 +465,49 @@ async function readLink() {
   );
 }
 
+async function findCreatedRelationshipEvent() {
+  const logs =
+    await publicClient.getContractEvents({
+      address:
+        contractAddress,
+
+      abi:
+        artifact.abi,
+
+      eventName:
+        "EntityLinkCreated",
+
+      fromBlock:
+        0n,
+
+      toBlock:
+        "latest",
+    });
+
+  return (
+    logs.find(
+      (log) =>
+        same(
+          log.args.sourceEntityId,
+          sourceEntityId,
+        ) &&
+        same(
+          log.args.targetEntityId,
+          targetEntityId,
+        ) &&
+        same(
+          log.args.linkType,
+          linkType,
+        ) &&
+        same(
+          log.args.evidenceHash,
+          linkEvidenceHash,
+        ),
+    ) ??
+    null
+  );
+}
+
 function receiptHasEvent(
   receipt,
   eventName,
@@ -504,9 +547,9 @@ function receiptHasEvent(
   return false;
 }
 
-function receiptHasTrace(
+function receiptHasEvidenceEvent(
   receipt,
-  eventType,
+  eventName,
   evidenceHash,
 ) {
   for (const log of receipt.logs) {
@@ -532,19 +575,8 @@ function receiptHasTrace(
 
       if (
         decoded.eventName ===
-          "TraceRecorded" &&
-        same(
-          decoded.args.tenantId,
-          tenantId,
-        ) &&
-        same(
-          decoded.args.entityId,
-          sourceEntityId,
-        ) &&
-        same(
-          decoded.args.eventType,
-          eventType,
-        ) &&
+          eventName &&
+        decoded.args.evidenceHash &&
         same(
           decoded.args.evidenceHash,
           evidenceHash,
@@ -564,8 +596,7 @@ async function send({
   functionName,
   values,
   requiredEvent,
-  traceEventType = null,
-  traceEvidenceHash = null,
+  evidenceHash = null,
 }) {
   const args =
     argsFor(
@@ -658,16 +689,15 @@ async function send({
   }
 
   if (
-    traceEventType &&
-    traceEvidenceHash &&
-    !receiptHasTrace(
+    evidenceHash &&
+    !receiptHasEvidenceEvent(
       receipt,
-      traceEventType,
-      traceEvidenceHash,
+      requiredEvent,
+      evidenceHash,
     )
   ) {
     throw new Error(
-      `${functionName}: matching TraceRecorded event missing.`,
+      `${functionName}: matching ${requiredEvent} evidence missing.`,
     );
   }
 
@@ -1041,6 +1071,46 @@ function save() {
 }
 
 if (
+  relationshipPresent &&
+  !record.transactions.createRelationship
+) {
+  const existingRelationshipEvent =
+    await findCreatedRelationshipEvent();
+
+  if (!existingRelationshipEvent) {
+    throw new Error(
+      "Relationship exists but matching EntityLinkCreated evidence could not be recovered.",
+    );
+  }
+
+  record.transactions.createRelationship = {
+    hash:
+      existingRelationshipEvent.transactionHash,
+
+    blockNumber:
+      existingRelationshipEvent.blockNumber.toString(),
+
+    recoveredFromChain:
+      true,
+  };
+
+  save();
+
+  console.log();
+  console.log(
+    "Recovered existing relationship transaction from chain.",
+  );
+
+  console.log(
+    `  transaction: ${existingRelationshipEvent.transactionHash}`,
+  );
+
+  console.log(
+    `  block:       ${existingRelationshipEvent.blockNumber}`,
+  );
+}
+
+if (
   record.complete === true
 ) {
   if (
@@ -1133,10 +1203,7 @@ if (!relationshipPresent) {
       requiredEvent:
         "EntityLinkCreated",
 
-      traceEventType:
-        linkEventType,
-
-      traceEvidenceHash:
+      evidenceHash:
         linkEvidenceHash,
     });
 
@@ -1230,10 +1297,7 @@ if (
       requiredEvent:
         "EntityLinkStatusChanged",
 
-      traceEventType:
-        disableEventType,
-
-      traceEvidenceHash:
+      evidenceHash:
         disableEvidenceHash,
     });
 
@@ -1269,10 +1333,7 @@ if (
       requiredEvent:
         "EntityLinkStatusChanged",
 
-      traceEventType:
-        enableEventType,
-
-      traceEvidenceHash:
+      evidenceHash:
         enableEvidenceHash,
     });
 
