@@ -1,4 +1,4 @@
-cat > README.md <<'EOF'
+
 # TraceForge Contracts
 
 Smart contract layer for **TraceForge**.
@@ -27,4 +27,3 @@ https://github.com/aididalam/traceforge
 ## Repository
 
 https://github.com/aididalam/traceforge-contracts
-EOF
