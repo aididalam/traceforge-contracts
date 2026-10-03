@@ -286,6 +286,17 @@ contract TraceForge is Ownable {
         bool active
     );
 
+
+    error EntityIsClosed(
+        bytes32 tenantId,
+        bytes32 entityId
+    );
+
+    error EntityHasPendingCustodyTransfer(
+        bytes32 tenantId,
+        bytes32 entityId
+    );
+
     event TenantCreated(
         bytes32 indexed tenantId,
         bytes32 metadataHash,
@@ -477,6 +488,18 @@ contract TraceForge is Ownable {
         bytes32 eventType,
         bytes32 evidenceHash,
         uint64 updatedAt
+    );
+
+
+    event EntityClosed(
+        bytes32 indexed tenantId,
+        bytes32 indexed entityId,
+        bytes32 indexed organizationId,
+        bytes32 roleId,
+        address actor,
+        bytes32 eventType,
+        bytes32 evidenceHash,
+        uint64 closedAt
     );
 
     constructor() Ownable(msg.sender) {}
@@ -1053,7 +1076,7 @@ contract TraceForge is Ownable {
             Capability.TRACE_RECORD
         );
 
-        _requireEntityExists(
+        _requireEntityOpen(
             tenantId,
             entityId
         );
@@ -1086,7 +1109,7 @@ contract TraceForge is Ownable {
             Capability.STATE_UPDATE
         );
 
-        _requireEntityExists(
+        _requireEntityOpen(
             tenantId,
             entityId
         );
@@ -1137,7 +1160,7 @@ contract TraceForge is Ownable {
             Capability.METADATA_UPDATE
         );
 
-        _requireEntityExists(
+        _requireEntityOpen(
             tenantId,
             entityId
         );
@@ -1194,7 +1217,7 @@ contract TraceForge is Ownable {
             Capability.CUSTODY_TRANSFER
         );
 
-        _requireEntityExists(
+        _requireEntityOpen(
             tenantId,
             entityId
         );
@@ -1306,7 +1329,7 @@ contract TraceForge is Ownable {
             Capability.CUSTODY_TRANSFER
         );
 
-        _requireEntityExists(
+        _requireEntityOpen(
             tenantId,
             entityId
         );
@@ -1408,7 +1431,7 @@ contract TraceForge is Ownable {
             Capability.CUSTODY_TRANSFER
         );
 
-        _requireEntityExists(
+        _requireEntityOpen(
             tenantId,
             entityId
         );
@@ -1546,12 +1569,12 @@ contract TraceForge is Ownable {
             Capability.ENTITY_LINK
         );
 
-        _requireEntityExists(
+        _requireEntityOpen(
             tenantId,
             sourceEntityId
         );
 
-        _requireEntityExists(
+        _requireEntityOpen(
             tenantId,
             targetEntityId
         );
@@ -1652,12 +1675,12 @@ contract TraceForge is Ownable {
             Capability.ENTITY_LINK
         );
 
-        _requireEntityExists(
+        _requireEntityOpen(
             tenantId,
             sourceEntityId
         );
 
-        _requireEntityExists(
+        _requireEntityOpen(
             tenantId,
             targetEntityId
         );
@@ -1720,6 +1743,83 @@ contract TraceForge is Ownable {
             eventType,
             evidenceHash,
             entityLink.updatedAt
+        );
+    }
+
+
+
+    // ------------------------------------------------------------
+    // Entity lifecycle
+    // ------------------------------------------------------------
+
+    function closeEntity(
+        bytes32 tenantId,
+        bytes32 roleId,
+        bytes32 entityId,
+        bytes32 eventType,
+        bytes32 evidenceHash
+    ) external {
+        _requireCapability(
+            tenantId,
+            roleId,
+            Capability.ENTITY_CLOSE
+        );
+
+        _requireEntityOpen(
+            tenantId,
+            entityId
+        );
+
+        _validateTraceEvidence(
+            eventType,
+            evidenceHash
+        );
+
+        bytes32 organizationId =
+            _requireCurrentEntityCustodian(
+                tenantId,
+                entityId
+            );
+
+        if (
+            pendingCustodyTransfers[
+                tenantId
+            ][
+                entityId
+            ].exists
+        ) {
+            revert EntityHasPendingCustodyTransfer(
+                tenantId,
+                entityId
+            );
+        }
+
+        Entity storage entity =
+            entities[tenantId][entityId];
+
+        uint64 timestamp =
+            uint64(block.timestamp);
+
+        entity.closed = true;
+        entity.updatedAt = timestamp;
+
+        emit EntityClosed(
+            tenantId,
+            entityId,
+            organizationId,
+            roleId,
+            msg.sender,
+            eventType,
+            evidenceHash,
+            timestamp
+        );
+
+        _emitTrace(
+            tenantId,
+            entityId,
+            roleId,
+            eventType,
+            evidenceHash
         );
     }
 
@@ -2140,6 +2240,31 @@ contract TraceForge is Ownable {
                 entityId,
                 currentCustodian,
                 organizationId
+            );
+        }
+    }
+
+
+
+    function _requireEntityOpen(
+        bytes32 tenantId,
+        bytes32 entityId
+    ) internal view {
+        _requireEntityExists(
+            tenantId,
+            entityId
+        );
+
+        if (
+            entities[
+                tenantId
+            ][
+                entityId
+            ].closed
+        ) {
+            revert EntityIsClosed(
+                tenantId,
+                entityId
             );
         }
     }
