@@ -1,0 +1,73 @@
+{
+  "schemaVersion": 1,
+  "complete": true,
+  "network": {
+    "chainId": 9009
+  },
+  "contract": {
+    "address": "0x07bf849fb7e97fa174791bdf3bf9bffa621e145b",
+    "runtimeBytecodeHash": "0x193b52381d4d3b816bf5f1a51bf2a5116da2ef04964afefe38e15239e900fef8"
+  },
+  "entity": {
+    "entityId": "0x098dec8d5207ed3dd8a04fd03193c758c650884d39f9d471e6d95336c4a1a569"
+  },
+  "custody": {
+    "fromOrganizationId": "0x6d143f0625d0664c5d27b4a6e17141c05dc24eac70cd8a20552f620264b40f5f",
+    "toOrganizationId": "0x19cb2dd8952a626d9254af21690cefaf9dba00e701bcd6805ac85a5d18cab11a",
+    "proposal": {
+      "eventType": "0x18abdf6d7f077cf392fc5218ce1cdd22017ca21480a9828a6fa2d8f086bb480b",
+      "evidenceHash": "0x38067f2f281599aa06f0e5b14283560dd5ec1613fbfc8204ec58c4018c2c797f",
+      "proposedAt": "1791130971"
+    },
+    "acceptance": {
+      "eventType": "0x156f6a165352cf67cc8ebf8a74cf58b8dbc65e08dfdffb51bcfd3cc3bde1882e",
+      "evidenceHash": "0xa2a204914470d4dc01ca5be8bd87ca488ada476f3f3402aad113ad079f4e6a36",
+      "acceptedAt": "1791133443"
+    }
+  },
+  "apiWrites": {
+    "proposal": {
+      "operationId": "010ac79c-82f0-4fbe-b3af-a7241a2d86b0",
+      "idempotencyKey": "sandbox-batch-001-custody-return-proposal-001",
+      "signerAddress": "0x7C29087bb1ec0d2A0B0ce343bBBAdE62e91C5d65",
+      "roleId": "0x5027b0e868d0fd05911c89da388fdd1393cc1ba493938df52179c481df0c00d3",
+      "nonce": "6",
+      "gasEstimate": "138848",
+      "gasLimit": "166618"
+    },
+    "acceptance": {
+      "operationId": "77a16b85-5196-438d-9139-be175796898d",
+      "idempotencyKey": "sandbox-batch-001-custody-return-acceptance-001",
+      "signerAddress": "0xA3f42A848A3A5675E959426e3c7258d0C7f0C019",
+      "roleId": "0xede905a271a8865b215f3d2d41a77155680c369834a15a16af84bc0d2cb60a26",
+      "nonce": "6",
+      "gasEstimate": "87096",
+      "gasLimit": "104516"
+    }
+  },
+  "transactions": {
+    "proposal": {
+      "hash": "0x16852f8f908275633613526e445944966544ea81767a84d0b02ec4c226091dbc",
+      "blockNumber": "38472",
+      "gasUsed": "137719"
+    },
+    "acceptance": {
+      "hash": "0xa16b34a7a135a11dc43a757535f0e42212ddd811499b67792f821557371d6b92",
+      "blockNumber": "39708",
+      "gasUsed": "71771"
+    }
+  },
+  "verification": {
+    "proposalTransactionConfirmed": true,
+    "acceptanceTransactionConfirmed": true,
+    "custodianTransferred": true,
+    "pendingTransferCleared": true,
+    "entityOpen": true,
+    "proposalEvidenceRecorded": true,
+    "acceptanceEvidenceRecorded": true,
+    "proposalSerializedTransactionCleared": true,
+    "acceptanceSerializedTransactionCleared": true,
+    "runtimeBytecodeHashVerifiedBeforeAcceptance": true,
+    "finalCustodianOrganizationId": "0x19cb2dd8952a626d9254af21690cefaf9dba00e701bcd6805ac85a5d18cab11a"
+  }
+}
