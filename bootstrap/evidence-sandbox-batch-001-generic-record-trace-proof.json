@@ -1,0 +1,8 @@
+{
+  "schemaVersion": 1,
+  "event": "GENERIC_API_RECORD_TRACE_PROOF",
+  "entity": "sandbox-batch-001",
+  "organization": "sandbox-producer",
+  "purpose": "TraceForge API v0.15 generic broadcast engine proof",
+  "environment": "development"
+}
