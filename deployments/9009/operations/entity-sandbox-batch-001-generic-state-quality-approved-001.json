@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "complete": true,
+  "network": {
+    "chainId": 9009
+  },
+  "contract": {
+    "address": "0x07bf849fb7e97fa174791bdf3bf9bffa621e145b",
+    "runtimeBytecodeHash": "0x193b52381d4d3b816bf5f1a51bf2a5116da2ef04964afefe38e15239e900fef8"
+  },
+  "entity": {
+    "entityId": "0x098dec8d5207ed3dd8a04fd03193c758c650884d39f9d471e6d95336c4a1a569",
+    "organizationId": "0x19cb2dd8952a626d9254af21690cefaf9dba00e701bcd6805ac85a5d18cab11a",
+    "roleId": "0xede905a271a8865b215f3d2d41a77155680c369834a15a16af84bc0d2cb60a26",
+    "signerAddress": "0xA3f42A848A3A5675E959426e3c7258d0C7f0C019"
+  },
+  "operation": {
+    "name": "updateEntityState",
+    "eventType": "0x6608281bf38a2d7fa826bae96cf0476b266e16cfe7fde962cd3e7dc631bd7213",
+    "evidenceHash": "0x5f5fc2a5dc804383394774971133dec2820b0cfb0a4adace2c87fb083b27319b",
+    "evidenceFile": "bootstrap/evidence-sandbox-batch-001-quality-approved.json",
+    "timestamp": "1791163080",
+    "newState": "0x721ef95cafe81285f508ebe341a9f20739d4769509e01be75baa00b05e77b3ae"
+  },
+  "apiWrite": {
+    "operationId": "54c83cdd-23d6-473e-9db4-4198fa2b2f3d",
+    "idempotencyKey": "sandbox-batch-001-quality-approved-state-001",
+    "nonce": "8",
+    "gasEstimate": "66137",
+    "gasLimit": "79365",
+    "status": "CONFIRMED"
+  },
+  "transaction": {
+    "hash": "0xb080b97b4671d2fe4fb592d6292edca8a95149e09f7001abe82626f8debd859a",
+    "blockNumber": "54526",
+    "gasUsed": "65295",
+    "receiptStatus": "success",
+    "logCount": 1
+  },
+  "indexedEvent": {
+    "eventId": "48",
+    "eventName": "TraceRecorded",
+    "logIndex": 0,
+    "stateAfter": "0x721ef95cafe81285f508ebe341a9f20739d4769509e01be75baa00b05e77b3ae",
+    "metadataHashAfter": "0x8a275375d6dca9355e8acc9db74e8f292c1559954700c31d47a0f2e92b3375fa"
+  },
+  "verification": {
+    "receiptConfirmed": true,
+    "journalConfirmed": true,
+    "serializedTransactionCleared": true,
+    "indexerReconciled": true,
+    "broadcastDisabledAfterWrite": true,
+    "traceEvidenceResolved": true,
+    "traceMetadataResolved": true,
+    "traceResolution": {
+      "metadata": {
+        "resolved": 11,
+        "total": 11,
+        "unresolved": 0
+      },
+      "evidence": {
+        "resolved": 11,
+        "total": 11,
+        "unresolved": 0
+      }
+    },
+    "stateUpdated": true,
+    "metadataUnchanged": true,
+    "custodyUnchanged": true,
+    "entityRemainsOpen": true,
+    "finalState": "0x721ef95cafe81285f508ebe341a9f20739d4769509e01be75baa00b05e77b3ae",
+    "finalMetadataHash": "0x8a275375d6dca9355e8acc9db74e8f292c1559954700c31d47a0f2e92b3375fa",
+    "finalCustodianOrganizationId": "0x19cb2dd8952a626d9254af21690cefaf9dba00e701bcd6805ac85a5d18cab11a"
+  }
+}
