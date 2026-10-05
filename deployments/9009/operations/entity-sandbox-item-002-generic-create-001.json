@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "complete": true,
+  "network": {
+    "chainId": 9009
+  },
+  "contract": {
+    "address": "0x07bf849fb7e97fa174791bdf3bf9bffa621e145b",
+    "runtimeBytecodeHash": "0x193b52381d4d3b816bf5f1a51bf2a5116da2ef04964afefe38e15239e900fef8"
+  },
+  "entity": {
+    "entityId": "0xb6a021b5def89a8029c720c6418d60bdaf595d2ef2c1d0d4bab7f521d2bdc834",
+    "organizationId": "0x19cb2dd8952a626d9254af21690cefaf9dba00e701bcd6805ac85a5d18cab11a",
+    "roleId": "0xede905a271a8865b215f3d2d41a77155680c369834a15a16af84bc0d2cb60a26",
+    "signerAddress": "0xA3f42A848A3A5675E959426e3c7258d0C7f0C019"
+  },
+  "operation": {
+    "name": "createEntity",
+    "entityType": "0xd74416be5a0f22763f73a0a923d9377b0b124062ba89b1de75e6f905f7cb0836",
+    "metadataHash": "0x76d88f47c0e4e2fa6182c02744727ffb05232a8f00ead1ec1d024c8e7489d36c",
+    "initialState": "0x09ddea8cc7bb8763f501e1101b83d1f724d14016aa7cdef5f09ab85743ee0fad",
+    "timestamp": "1791166512"
+  },
+  "apiWrite": {
+    "operationId": "5bc3334c-1033-4199-8d3f-0a17c69e0475",
+    "idempotencyKey": "sandbox-item-002-create-001",
+    "nonce": "10",
+    "gasEstimate": "166915",
+    "gasLimit": "200298",
+    "status": "CONFIRMED"
+  },
+  "transaction": {
+    "hash": "0xb5f83cd4e1d34c00833f325f30cef207ae70ecdca66311834fefb900faf5cec6",
+    "blockNumber": "56240",
+    "gasUsed": "164443",
+    "receiptStatus": "success",
+    "logCount": 1
+  },
+  "indexedEvent": {
+    "eventId": "50",
+    "eventName": "EntityCreated",
+    "logIndex": 0
+  },
+  "verification": {
+    "receiptConfirmed": true,
+    "journalConfirmed": true,
+    "serializedTransactionCleared": true,
+    "indexerReconciled": true,
+    "broadcastDisabledAfterWrite": true,
+    "traceEvidenceResolved": true,
+    "traceMetadataResolved": true,
+    "traceResolution": {
+      "metadata": {
+        "resolved": 12,
+        "total": 12,
+        "unresolved": 0
+      },
+      "evidence": {
+        "resolved": 12,
+        "total": 12,
+        "unresolved": 0
+      }
+    },
+    "entityCreated": true,
+    "metadataResolved": true,
+    "entityRemainsOpen": true,
+    "finalState": "0x09ddea8cc7bb8763f501e1101b83d1f724d14016aa7cdef5f09ab85743ee0fad",
+    "finalMetadataHash": "0x76d88f47c0e4e2fa6182c02744727ffb05232a8f00ead1ec1d024c8e7489d36c",
+    "finalCustodianOrganizationId": "0x19cb2dd8952a626d9254af21690cefaf9dba00e701bcd6805ac85a5d18cab11a"
+  }
+}
