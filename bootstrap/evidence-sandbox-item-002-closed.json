@@ -1,0 +1,8 @@
+{
+  "schemaVersion": 1,
+  "event": "ITEM_CLOSED",
+  "entity": "sandbox-item-002",
+  "actor": "sandbox-producer",
+  "reason": "generic API closeEntity proof",
+  "environment": "development"
+}
