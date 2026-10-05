@@ -1,0 +1,8 @@
+{
+  "schemaVersion": 1,
+  "event": "ENTITY_LINK_DISABLED",
+  "source": "sandbox-batch-001",
+  "target": "sandbox-item-002",
+  "actor": "sandbox-producer",
+  "environment": "development"
+}
