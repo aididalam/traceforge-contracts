@@ -1,4 +1,3 @@
-
 # TraceForge Contracts
 
 Smart contract layer for **TraceForge**.
@@ -7,10 +6,9 @@ TraceForge Contracts contains the blockchain trust and traceability protocol use
 
 ## Parent Project
 
-This repository is a component of:
-
-**TraceForge**  
-https://github.com/aididalam/traceforge
+This repository is the `contracts/` submodule of
+[TraceForge](https://github.com/aididalam/traceforge).
+See the parent repository for all components, architecture and setup.
 
 ## Responsibilities
 
@@ -26,4 +24,4 @@ https://github.com/aididalam/traceforge
 
 ## Repository
 
-https://github.com/aididalam/traceforge-contracts
+[traceforge-contracts](https://github.com/aididalam/traceforge-contracts)
