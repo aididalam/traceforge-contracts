@@ -1,9 +1,0 @@
-{
-  "schemaVersion": 1,
-  "event": "BATCH_CONTAINS_ITEM",
-  "sourceEntity": "sandbox-batch-001",
-  "targetEntity": "sandbox-item-002",
-  "actor": "sandbox-producer",
-  "linkType": "CONTAINS",
-  "environment": "development"
-}

@@ -18,6 +18,12 @@ export default defineConfig({
   },
 
   networks: {
+    integration: {
+      type: "edr-simulated",
+      chainType: "l1",
+      chainId: 9009,
+      initialBaseFeePerGas: 0,
+    },
     traceforge: {
       type: "http",
       chainType: "l1",

@@ -12,18 +12,18 @@
   },
   "deployment": {
     "deployer": "0x41903e34609e938BF6B452A47E1F87aeFB456AaD",
-    "transactionHash": "0x7f2c9048055fef11cd05dc0e808ea27d300259c11e73668f436666b4281bdd89",
-    "blockNumber": "3027",
-    "blockTimestamp": "1791060081",
-    "deployedAt": "2026-10-03T20:41:21.000Z",
-    "gasUsed": "2979081",
+    "transactionHash": "0xa7a2663b48d970d9c8be7fc062b8887403a9811a61e298dee9fcd634b88f6ca6",
+    "blockNumber": "71",
+    "blockTimestamp": "1791218040",
+    "deployedAt": "2026-10-05T16:34:00.000Z",
+    "gasUsed": "2914548",
     "effectiveGasPrice": "0"
   },
   "artifact": {
-    "creationBytes": 13561,
-    "runtimeBytes": 13430,
-    "expectedRuntimeHash": "0x193b52381d4d3b816bf5f1a51bf2a5116da2ef04964afefe38e15239e900fef8",
-    "deployedRuntimeHash": "0x193b52381d4d3b816bf5f1a51bf2a5116da2ef04964afefe38e15239e900fef8",
+    "creationBytes": 13262,
+    "runtimeBytes": 13131,
+    "expectedRuntimeHash": "0xaf14115fa014b0868ffa446729a398f5a2aeb5d9fbdc9b41551f8e33d746e439",
+    "deployedRuntimeHash": "0xaf14115fa014b0868ffa446729a398f5a2aeb5d9fbdc9b41551f8e33d746e439",
     "runtimeMatches": true
   }
 }

@@ -1,7 +1,0 @@
-{
-  "schemaVersion": 1,
-  "slug": "sandbox-distributor",
-  "name": "Sandbox Distributor",
-  "environment": "development",
-  "organizationType": "distributor"
-}

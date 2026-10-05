@@ -1,8 +1,0 @@
-{
-  "schemaVersion": 1,
-  "event": "BATCH_REGISTERED",
-  "entity": "sandbox-batch-001",
-  "actor": "sandbox-producer",
-  "environment": "development",
-  "description": "Initial registration of sandbox batch 001"
-}

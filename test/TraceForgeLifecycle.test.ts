@@ -317,34 +317,11 @@ describe("TraceForge closed entity lifecycle", () => {
     );
   });
 
-  it("requires ENTITY_CLOSE capability", async () => {
-    const {
-      adminContract,
-      organizationAContract,
-      tenantId,
-      roleId,
-      entityId,
-      wait,
-    } = await prepareLifecycleScenario();
-
-    await wait(
-      await adminContract.write.setRoleCapability([
-        tenantId,
-        roleId,
-        CAPABILITY.ENTITY_CLOSE,
-        false,
-      ]),
-    );
-
-    await assert.rejects(async () => {
-      await organizationAContract.write.closeEntity([
-        tenantId,
-        roleId,
-        entityId,
-        id("ENTITY_CLOSED"),
-        id("CLOSE_EVIDENCE"),
-      ]);
-    });
+  it("allows a current holder to close without an ENTITY_CLOSE role", async () => {
+    const { adminContract, organizationAContract, traceForge, tenantId, roleId, entityId, wait } = await prepareLifecycleScenario();
+    await wait(await adminContract.write.setRoleCapability([tenantId, roleId, CAPABILITY.ENTITY_CLOSE, false]));
+    await wait(await organizationAContract.write.closeEntity([tenantId, zeroHash, entityId, id("DAMAGED"), id("EVIDENCE")]));
+    assert.equal((await traceForge.read.getEntity([tenantId, entityId])).closed, true);
   });
 
   it("allows only the current custodian organization to close an entity", async () => {
@@ -425,75 +402,6 @@ describe("TraceForge closed entity lifecycle", () => {
     });
   });
 
-  it("blocks closing while a custody transfer is pending and allows close after cancellation", async () => {
-    const {
-      traceForge,
-      organizationAContract,
-      tenantId,
-      organizationBId,
-      roleId,
-      entityId,
-      wait,
-    } = await prepareLifecycleScenario();
-
-    await wait(
-      await organizationAContract.write.proposeCustodyTransfer([
-        tenantId,
-        roleId,
-        entityId,
-        organizationBId,
-        id("CUSTODY_OFFERED"),
-        id("OFFER_EVIDENCE"),
-      ]),
-    );
-
-    await assert.rejects(async () => {
-      await organizationAContract.write.closeEntity([
-        tenantId,
-        roleId,
-        entityId,
-        id("ENTITY_CLOSED"),
-        id("CLOSE_EVIDENCE"),
-      ]);
-    });
-
-    assert.equal(
-      await traceForge.read.hasPendingCustodyTransfer([
-        tenantId,
-        entityId,
-      ]),
-      true,
-    );
-
-    await wait(
-      await organizationAContract.write.cancelCustodyTransfer([
-        tenantId,
-        roleId,
-        entityId,
-        id("CUSTODY_CANCELLED"),
-        id("CANCEL_EVIDENCE"),
-      ]),
-    );
-
-    await wait(
-      await organizationAContract.write.closeEntity([
-        tenantId,
-        roleId,
-        entityId,
-        id("ENTITY_CLOSED"),
-        id("CLOSE_AFTER_CANCEL_EVIDENCE"),
-      ]),
-    );
-
-    const entity =
-      await traceForge.read.getEntity([
-        tenantId,
-        entityId,
-      ]);
-
-    assert.equal(entity.closed, true);
-  });
-
   it("blocks ordinary entity mutations after closure", async () => {
     const {
       organizationAContract,
@@ -562,11 +470,10 @@ describe("TraceForge closed entity lifecycle", () => {
     });
 
     await assert.rejects(async () => {
-      await organizationAContract.write.proposeCustodyTransfer([
+      await organizationAContract.write.claimCustody([
         tenantId,
-        roleId,
         entityId,
-        organizationBId,
+        0n,
         id("CUSTODY_OFFERED"),
         id("CUSTODY_EVIDENCE"),
       ]);

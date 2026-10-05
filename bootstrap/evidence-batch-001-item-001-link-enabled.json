@@ -1,8 +1,0 @@
-{
-  "schemaVersion": 1,
-  "event": "ENTITY_LINK_ENABLED",
-  "source": "sandbox-batch-001",
-  "target": "sandbox-item-001",
-  "actor": "sandbox-distributor",
-  "environment": "development"
-}

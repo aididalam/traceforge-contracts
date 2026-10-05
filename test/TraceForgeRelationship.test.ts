@@ -727,35 +727,9 @@ describe("TraceForge entity relationships", () => {
       ]),
     );
 
-    await wait(
-      await adminContract.write.setRoleCapability([
-        tenantId,
-        roleId,
-        CAPABILITY.CUSTODY_TRANSFER,
-        true,
-      ]),
-    );
-
-    await wait(
-      await organizationAContract.write.proposeCustodyTransfer([
-        tenantId,
-        roleId,
-        sourceEntityId,
-        organizationBId,
-        id("CUSTODY_OFFERED"),
-        id("CUSTODY_OFFER_EVIDENCE"),
-      ]),
-    );
-
-    await wait(
-      await organizationBContract.write.acceptCustodyTransfer([
-        tenantId,
-        roleId,
-        sourceEntityId,
-        id("CUSTODY_ACCEPTED"),
-        id("CUSTODY_ACCEPTANCE_EVIDENCE"),
-      ]),
-    );
+    await wait(await organizationBContract.write.claimCustody([
+      tenantId, sourceEntityId, 0n, id("RECEIVED"), id("RECEIPT_EVIDENCE")
+    ]));
 
     const entity =
       await traceForge.read.getEntity([

@@ -1,8 +1,0 @@
-{
-  "schemaVersion": 1,
-  "event": "CUSTODY_TRANSFER_PROPOSED",
-  "entity": "sandbox-batch-001",
-  "fromOrganization": "sandbox-producer",
-  "toOrganization": "sandbox-distributor",
-  "environment": "development"
-}

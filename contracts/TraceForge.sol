@@ -36,7 +36,7 @@ contract TraceForge is Ownable2Step {
         TRACE_RECORD,
         STATE_UPDATE,
         METADATA_UPDATE,
-        CUSTODY_TRANSFER,
+        RESERVED_4, // Preserve generic capability indices. Receive requires no role.
         ENTITY_LINK,
         ENTITY_CLOSE
     }
@@ -65,15 +65,6 @@ contract TraceForge is Ownable2Step {
         uint64 updatedAt;
         bool exists;
         bool closed;
-    }
-
-
-    struct CustodyTransfer {
-        bytes32 fromOrganizationId;
-        bytes32 toOrganizationId;
-        address proposedBy;
-        uint64 proposedAt;
-        bool exists;
     }
 
 
@@ -115,11 +106,7 @@ contract TraceForge is Ownable2Step {
         private entities;
 
 
-    mapping(
-        bytes32 =>
-            mapping(bytes32 => CustodyTransfer)
-    ) private pendingCustodyTransfers;
-
+    mapping(bytes32 => mapping(bytes32 => uint64)) private custodyVersions;
 
     mapping(bytes32 => mapping(bytes32 => EntityLink))
         private entityLinks;
@@ -244,28 +231,7 @@ contract TraceForge is Ownable2Step {
 
     error InvalidCustodyRecipient();
 
-    error CustodyTransferAlreadyPending(
-        bytes32 tenantId,
-        bytes32 entityId
-    );
-
-    error CustodyTransferNotFound(
-        bytes32 tenantId,
-        bytes32 entityId
-    );
-
-    error NotCustodyRecipient(
-        bytes32 tenantId,
-        bytes32 entityId,
-        bytes32 expectedOrganizationId,
-        bytes32 callerOrganizationId
-    );
-
-    error CustodyChangedSinceProposal(
-        bytes32 tenantId,
-        bytes32 entityId
-    );
-
+    error StaleCustody(bytes32 tenantId, bytes32 entityId, uint64 expectedVersion, uint64 actualVersion);
 
     error InvalidLinkType();
 
@@ -291,11 +257,6 @@ contract TraceForge is Ownable2Step {
 
 
     error EntityIsClosed(
-        bytes32 tenantId,
-        bytes32 entityId
-    );
-
-    error EntityHasPendingCustodyTransfer(
         bytes32 tenantId,
         bytes32 entityId
     );
@@ -414,55 +375,17 @@ contract TraceForge is Ownable2Step {
     );
 
 
-    event CustodyTransferProposed(
+    event CustodyClaimed(
         bytes32 indexed tenantId,
         bytes32 indexed entityId,
         bytes32 indexed fromOrganizationId,
         bytes32 toOrganizationId,
-        bytes32 roleId,
         address actor,
         bytes32 eventType,
         bytes32 evidenceHash,
-        uint64 proposedAt
+        uint64 custodyVersion,
+        uint64 timestamp
     );
-
-    event CustodyTransferCancelled(
-        bytes32 indexed tenantId,
-        bytes32 indexed entityId,
-        bytes32 indexed fromOrganizationId,
-        bytes32 toOrganizationId,
-        bytes32 roleId,
-        address actor,
-        bytes32 eventType,
-        bytes32 evidenceHash,
-        uint64 cancelledAt
-    );
-
-
-    event CustodyTransferCancelledByAdmin(
-        bytes32 indexed tenantId,
-        bytes32 indexed entityId,
-        bytes32 indexed fromOrganizationId,
-        bytes32 toOrganizationId,
-        address admin,
-        bytes32 eventType,
-        bytes32 evidenceHash,
-        uint64 cancelledAt
-    );
-
-
-    event CustodyTransferred(
-        bytes32 indexed tenantId,
-        bytes32 indexed entityId,
-        bytes32 indexed fromOrganizationId,
-        bytes32 toOrganizationId,
-        bytes32 roleId,
-        address actor,
-        bytes32 eventType,
-        bytes32 evidenceHash,
-        uint64 acceptedAt
-    );
-
 
     event EntityLinkCreated(
         bytes32 indexed tenantId,
@@ -644,6 +567,51 @@ contract TraceForge is Ownable2Step {
             metadataHash,
             createdAt
         );
+    }
+
+    /// Independent businesses bind only their own wallet; existing identities cannot be replaced.
+    function registerBusiness(bytes32 organizationId, bytes32 metadataHash) external {
+        if (organizationId == bytes32(0)) revert InvalidOrganizationId();
+        if (metadataHash == bytes32(0)) revert InvalidMetadataHash();
+        if (organizations[organizationId].exists) revert OrganizationAlreadyExists(organizationId);
+        bytes32 existing = walletBindings[msg.sender].organizationId;
+        if (existing != bytes32(0)) revert WalletAlreadyBound(msg.sender, existing);
+        uint64 timestamp = uint64(block.timestamp);
+        organizations[organizationId] = Organization(true, true, metadataHash, timestamp);
+        walletBindings[msg.sender] = WalletBinding(organizationId, true);
+        emit OrganizationRegistered(organizationId, metadataHash, timestamp);
+        emit WalletBound(msg.sender, organizationId);
+    }
+
+    /// A business can create its own production workspace without platform approval.
+    function createBusinessWorkspace(bytes32 tenantId, bytes32 metadataHash, bytes32 roleId) external {
+        bytes32 organizationId = _requireActiveBusinessWallet();
+        if (tenantId == bytes32(0)) revert InvalidTenantId();
+        if (tenants[tenantId].exists) revert TenantAlreadyExists(tenantId);
+        if (metadataHash == bytes32(0)) revert InvalidMetadataHash();
+        if (roleId == bytes32(0)) revert InvalidRoleId();
+        uint64 timestamp = uint64(block.timestamp);
+        tenants[tenantId] = Tenant(true, true, metadataHash, timestamp);
+        tenantAdmins[tenantId][msg.sender] = true;
+        tenantMemberships[tenantId][organizationId] = TenantMembership(true, true, timestamp);
+        uint256 mask = 47; // Generic create, trace, state, metadata and link. No receiving role.
+        roles[tenantId][roleId] = Role(true, true, metadataHash, mask, timestamp);
+        organizationRoles[tenantId][organizationId][roleId] = RoleAssignment(true, true, timestamp);
+        emit TenantCreated(tenantId, metadataHash, msg.sender, timestamp);
+        emit TenantAdminChanged(tenantId, msg.sender, true);
+        emit OrganizationAddedToTenant(tenantId, organizationId, timestamp);
+        emit RoleCreated(tenantId, roleId, metadataHash, timestamp);
+        for (uint8 i = 0; i < 6; i++) {
+            if (i != 4) emit RoleCapabilityChanged(tenantId, roleId, Capability(i), true);
+        }
+        emit OrganizationRoleAssigned(tenantId, organizationId, roleId, timestamp);
+    }
+
+    function _requireActiveBusinessWallet() internal view returns (bytes32 organizationId) {
+        WalletBinding memory binding = walletBindings[msg.sender];
+        organizationId = binding.organizationId;
+        if (organizationId == bytes32(0) || !binding.active) revert WalletNotBound(msg.sender);
+        _requireOrganizationActive(organizationId);
     }
 
     function setOrganizationActive(
@@ -1218,352 +1186,33 @@ contract TraceForge is Ownable2Step {
     // Custody transfer
     // ------------------------------------------------------------
 
-    function proposeCustodyTransfer(
-        bytes32 tenantId,
-        bytes32 roleId,
-        bytes32 entityId,
-        bytes32 toOrganizationId,
-        bytes32 eventType,
-        bytes32 evidenceHash
+    /// The receiver declares physical receipt without a sender proposal or workspace role.
+    /// The version prevents replay of an old receipt after custody changes away and back.
+    function claimCustody(
+        bytes32 tenantId, bytes32 entityId, uint64 expectedVersion,
+        bytes32 eventType, bytes32 evidenceHash
     ) external {
-        _requireCapability(
-            tenantId,
-            roleId,
-            Capability.CUSTODY_TRANSFER
-        );
-
-        _requireEntityOpen(
-            tenantId,
-            entityId
-        );
-
-        _validateTraceEvidence(
-            eventType,
-            evidenceHash
-        );
-
-        _requireOrganizationActive(
-            toOrganizationId
-        );
-
-        _requireActiveTenantMembership(
-            tenantId,
-            toOrganizationId
-        );
-
-        Entity storage entity =
-            entities[tenantId][entityId];
-
-        bytes32 callerOrganizationId =
-            walletBindings[msg.sender]
-                .organizationId;
-
-        if (
-            entity.currentCustodian !=
-            callerOrganizationId
-        ) {
-            revert NotCurrentCustodian(
-                tenantId,
-                entityId,
-                entity.currentCustodian,
-                callerOrganizationId
-            );
-        }
-
-        if (
-            toOrganizationId ==
-            callerOrganizationId
-        ) {
-            revert InvalidCustodyRecipient();
-        }
-
-        if (
-            pendingCustodyTransfers[
-                tenantId
-            ][
-                entityId
-            ].exists
-        ) {
-            revert CustodyTransferAlreadyPending(
-                tenantId,
-                entityId
-            );
-        }
-
-        uint64 proposedAt =
-            uint64(block.timestamp);
-
-        pendingCustodyTransfers[
-            tenantId
-        ][
-            entityId
-        ] = CustodyTransfer({
-            fromOrganizationId:
-                callerOrganizationId,
-            toOrganizationId:
-                toOrganizationId,
-            proposedBy:
-                msg.sender,
-            proposedAt:
-                proposedAt,
-            exists:
-                true
-        });
-
-        emit CustodyTransferProposed(
-            tenantId,
-            entityId,
-            callerOrganizationId,
-            toOrganizationId,
-            roleId,
-            msg.sender,
-            eventType,
-            evidenceHash,
-            proposedAt
-        );
-
-        _emitTrace(
-            tenantId,
-            entityId,
-            roleId,
-            eventType,
-            evidenceHash
-        );
+        bytes32 receiver = _requireActiveBusinessWallet();
+        _requireTenantActive(tenantId);
+        _requireEntityOpen(tenantId, entityId);
+        _validateTraceEvidence(eventType, evidenceHash);
+        uint64 version = custodyVersions[tenantId][entityId];
+        if (expectedVersion != version) revert StaleCustody(tenantId, entityId, expectedVersion, version);
+        Entity storage entity = entities[tenantId][entityId];
+        bytes32 previous = entity.currentCustodian;
+        if (previous == receiver) revert InvalidCustodyRecipient();
+        entity.currentCustodian = receiver;
+        entity.updatedAt = uint64(block.timestamp);
+        custodyVersions[tenantId][entityId] = version + 1;
+        emit CustodyClaimed(tenantId, entityId, previous, receiver, msg.sender,
+            eventType, evidenceHash, version + 1, entity.updatedAt);
+        _emitTrace(tenantId, entityId, bytes32(0), eventType, evidenceHash);
     }
 
-    function acceptCustodyTransfer(
-        bytes32 tenantId,
-        bytes32 roleId,
-        bytes32 entityId,
-        bytes32 eventType,
-        bytes32 evidenceHash
-    ) external {
-        _requireCapability(
-            tenantId,
-            roleId,
-            Capability.CUSTODY_TRANSFER
-        );
-
-        _requireEntityOpen(
-            tenantId,
-            entityId
-        );
-
-        _validateTraceEvidence(
-            eventType,
-            evidenceHash
-        );
-
-        CustodyTransfer memory transfer =
-            pendingCustodyTransfers[
-                tenantId
-            ][
-                entityId
-            ];
-
-        if (!transfer.exists) {
-            revert CustodyTransferNotFound(
-                tenantId,
-                entityId
-            );
-        }
-
-        bytes32 callerOrganizationId =
-            walletBindings[msg.sender]
-                .organizationId;
-
-        if (
-            callerOrganizationId !=
-            transfer.toOrganizationId
-        ) {
-            revert NotCustodyRecipient(
-                tenantId,
-                entityId,
-                transfer.toOrganizationId,
-                callerOrganizationId
-            );
-        }
-
-        Entity storage entity =
-            entities[tenantId][entityId];
-
-        if (
-            entity.currentCustodian !=
-            transfer.fromOrganizationId
-        ) {
-            revert CustodyChangedSinceProposal(
-                tenantId,
-                entityId
-            );
-        }
-
-        bytes32 fromOrganizationId =
-            transfer.fromOrganizationId;
-
-        entity.currentCustodian =
-            transfer.toOrganizationId;
-
-        entity.updatedAt =
-            uint64(block.timestamp);
-
-        delete pendingCustodyTransfers[
-            tenantId
-        ][
-            entityId
-        ];
-
-        emit CustodyTransferred(
-            tenantId,
-            entityId,
-            fromOrganizationId,
-            callerOrganizationId,
-            roleId,
-            msg.sender,
-            eventType,
-            evidenceHash,
-            uint64(block.timestamp)
-        );
-
-        _emitTrace(
-            tenantId,
-            entityId,
-            roleId,
-            eventType,
-            evidenceHash
-        );
+    function getCustodyVersion(bytes32 tenantId, bytes32 entityId) external view returns (uint64) {
+        _requireEntityExists(tenantId, entityId);
+        return custodyVersions[tenantId][entityId];
     }
-
-    function cancelCustodyTransfer(
-        bytes32 tenantId,
-        bytes32 roleId,
-        bytes32 entityId,
-        bytes32 eventType,
-        bytes32 evidenceHash
-    ) external {
-        _requireCapability(
-            tenantId,
-            roleId,
-            Capability.CUSTODY_TRANSFER
-        );
-
-        _requireEntityOpen(
-            tenantId,
-            entityId
-        );
-
-        _validateTraceEvidence(
-            eventType,
-            evidenceHash
-        );
-
-        CustodyTransfer memory transfer =
-            pendingCustodyTransfers[
-                tenantId
-            ][
-                entityId
-            ];
-
-        if (!transfer.exists) {
-            revert CustodyTransferNotFound(
-                tenantId,
-                entityId
-            );
-        }
-
-        bytes32 callerOrganizationId =
-            walletBindings[msg.sender]
-                .organizationId;
-
-        if (
-            callerOrganizationId !=
-            transfer.fromOrganizationId
-        ) {
-            revert NotCurrentCustodian(
-                tenantId,
-                entityId,
-                transfer.fromOrganizationId,
-                callerOrganizationId
-            );
-        }
-
-        delete pendingCustodyTransfers[
-            tenantId
-        ][
-            entityId
-        ];
-
-        emit CustodyTransferCancelled(
-            tenantId,
-            entityId,
-            transfer.fromOrganizationId,
-            transfer.toOrganizationId,
-            roleId,
-            msg.sender,
-            eventType,
-            evidenceHash,
-            uint64(block.timestamp)
-        );
-
-        _emitTrace(
-            tenantId,
-            entityId,
-            roleId,
-            eventType,
-            evidenceHash
-        );
-    }
-
-
-
-    function cancelCustodyTransferAsTenantAdmin(
-        bytes32 tenantId,
-        bytes32 entityId,
-        bytes32 eventType,
-        bytes32 evidenceHash
-    ) external onlyTenantAdmin(tenantId) {
-        _requireEntityExists(
-            tenantId,
-            entityId
-        );
-
-        _validateTraceEvidence(
-            eventType,
-            evidenceHash
-        );
-
-        CustodyTransfer memory transfer =
-            pendingCustodyTransfers[
-                tenantId
-            ][
-                entityId
-            ];
-
-        if (!transfer.exists) {
-            revert CustodyTransferNotFound(
-                tenantId,
-                entityId
-            );
-        }
-
-        delete pendingCustodyTransfers[
-            tenantId
-        ][
-            entityId
-        ];
-
-        emit CustodyTransferCancelledByAdmin(
-            tenantId,
-            entityId,
-            transfer.fromOrganizationId,
-            transfer.toOrganizationId,
-            msg.sender,
-            eventType,
-            evidenceHash,
-            uint64(block.timestamp)
-        );
-    }
-
-
 
     // ------------------------------------------------------------
     // Entity relationships
@@ -1774,11 +1423,8 @@ contract TraceForge is Ownable2Step {
         bytes32 eventType,
         bytes32 evidenceHash
     ) external {
-        _requireCapability(
-            tenantId,
-            roleId,
-            Capability.ENTITY_CLOSE
-        );
+        _requireActiveBusinessWallet();
+        _requireTenantActive(tenantId);
 
         _requireEntityOpen(
             tenantId,
@@ -1796,19 +1442,6 @@ contract TraceForge is Ownable2Step {
                 entityId
             );
 
-        if (
-            pendingCustodyTransfers[
-                tenantId
-            ][
-                entityId
-            ].exists
-        ) {
-            revert EntityHasPendingCustodyTransfer(
-                tenantId,
-                entityId
-            );
-        }
-
         Entity storage entity =
             entities[tenantId][entityId];
 
@@ -1816,6 +1449,7 @@ contract TraceForge is Ownable2Step {
             uint64(block.timestamp);
 
         entity.closed = true;
+        custodyVersions[tenantId][entityId] += 1;
         entity.updatedAt = timestamp;
 
         emit EntityClosed(
@@ -2090,47 +1724,6 @@ contract TraceForge is Ownable2Step {
         bytes32 entityId
     ) external view returns (bool) {
         return entities[tenantId][entityId].exists;
-    }
-
-
-
-    function getPendingCustodyTransfer(
-        bytes32 tenantId,
-        bytes32 entityId
-    ) external view returns (
-        CustodyTransfer memory
-    ) {
-        _requireEntityExists(
-            tenantId,
-            entityId
-        );
-
-        CustodyTransfer memory transfer =
-            pendingCustodyTransfers[
-                tenantId
-            ][
-                entityId
-            ];
-
-        if (!transfer.exists) {
-            revert CustodyTransferNotFound(
-                tenantId,
-                entityId
-            );
-        }
-
-        return transfer;
-    }
-
-    function hasPendingCustodyTransfer(
-        bytes32 tenantId,
-        bytes32 entityId
-    ) external view returns (bool) {
-        return pendingCustodyTransfers[
-            tenantId
-        ][
-            entityId
-        ].exists;
     }
 
 

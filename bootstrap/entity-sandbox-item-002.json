@@ -1,8 +1,0 @@
-{
-  "schemaVersion": 1,
-  "name": "Sandbox Item 002",
-  "slug": "sandbox-item-002",
-  "entityType": "ITEM",
-  "initialState": "CREATED",
-  "environment": "development"
-}
