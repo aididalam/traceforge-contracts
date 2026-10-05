@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "complete": true,
+  "network": {
+    "chainId": 9009
+  },
+  "contract": {
+    "address": "0x07bf849fb7e97fa174791bdf3bf9bffa621e145b",
+    "runtimeBytecodeHash": "0x193b52381d4d3b816bf5f1a51bf2a5116da2ef04964afefe38e15239e900fef8"
+  },
+  "entity": {
+    "entityId": "0x098dec8d5207ed3dd8a04fd03193c758c650884d39f9d471e6d95336c4a1a569",
+    "organizationId": "0x19cb2dd8952a626d9254af21690cefaf9dba00e701bcd6805ac85a5d18cab11a",
+    "roleId": "0xede905a271a8865b215f3d2d41a77155680c369834a15a16af84bc0d2cb60a26",
+    "signerAddress": "0xA3f42A848A3A5675E959426e3c7258d0C7f0C019"
+  },
+  "operation": {
+    "name": "setEntityLinkActive",
+    "targetEntityId": "0xb6a021b5def89a8029c720c6418d60bdaf595d2ef2c1d0d4bab7f521d2bdc834",
+    "linkType": "0xb546ddebf2cc54c215beee5b56c25b19cd4e03d9ef5628d869b5a8528fc95d01",
+    "active": false,
+    "eventType": "0x2ac97c8f9dbd65406f6acbb5f8c85f4aed4a0a0055b4a484e14604484020de90",
+    "evidenceHash": "0x8080fc0edbdba2492f513dc8e62495fdc7d2ef87a0d00cbe3a3184ca6c3f6fa0",
+    "timestamp": "1791168212"
+  },
+  "apiWrite": {
+    "operationId": "53f17406-ad3a-4ab0-85aa-ae4916df969e",
+    "idempotencyKey": "sandbox-batch-001-item-002-link-disable-001",
+    "nonce": "12",
+    "gasEstimate": "68120",
+    "gasLimit": "81744",
+    "status": "CONFIRMED"
+  },
+  "transaction": {
+    "hash": "0xab00c5a70f50b10160f732350254c06ba250b56bc36f1738b8026aa5419316aa",
+    "blockNumber": "57090",
+    "gasUsed": "67270",
+    "receiptStatus": "success",
+    "logCount": 1
+  },
+  "indexedEvent": {
+    "eventId": "52",
+    "eventName": "EntityLinkStatusChanged",
+    "logIndex": 0
+  },
+  "verification": {
+    "receiptConfirmed": true,
+    "journalConfirmed": true,
+    "serializedTransactionCleared": true,
+    "indexerReconciled": true,
+    "broadcastDisabledAfterWrite": true,
+    "traceEvidenceResolved": true,
+    "traceMetadataResolved": true,
+    "traceResolution": {
+      "metadata": {
+        "resolved": 12,
+        "total": 12,
+        "unresolved": 0
+      },
+      "evidence": {
+        "resolved": 12,
+        "total": 12,
+        "unresolved": 0
+      }
+    },
+    "linkStatusUpdated": true,
+    "finalLinkActive": false,
+    "entityRemainsOpen": true,
+    "finalCustodianOrganizationId": "0x19cb2dd8952a626d9254af21690cefaf9dba00e701bcd6805ac85a5d18cab11a"
+  }
+}
