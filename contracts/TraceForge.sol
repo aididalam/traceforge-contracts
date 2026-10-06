@@ -67,6 +67,33 @@ contract TraceForge is Ownable2Step {
         bool closed;
     }
 
+    // Registration identity is independent of later metadata edits and balances.
+    struct Product {
+        bytes32 registrationMetadataHash;
+        bytes32 originOrganizationId;
+        bytes32 rootRouteId;
+        uint64 initialQuantity;
+        uint64 availableQuantity;
+        uint64 removedQuantity;
+        bool exists;
+    }
+
+    struct BatchRoute {
+        bytes32 organizationId;
+        bytes32 parentRouteId;
+        uint64 receivedQuantity;
+        uint64 availableQuantity;
+        uint64 forwardedQuantity;
+        uint64 removedQuantity;
+        uint64 version;
+        uint64 createdAt;
+        bool exists;
+    }
+
+    enum RemovalReason { Sold, Lost, Damaged, Spoiled, Disposed, Other }
+
+    uint64 public constant MAX_PRODUCT_QUANTITY = 9_007_199_254_740_991;
+
 
     struct EntityLink {
         bytes32 sourceEntityId;
@@ -107,6 +134,10 @@ contract TraceForge is Ownable2Step {
 
 
     mapping(bytes32 => mapping(bytes32 => uint64)) private custodyVersions;
+
+    mapping(bytes32 => mapping(bytes32 => Product)) private products;
+    mapping(bytes32 => mapping(bytes32 => mapping(bytes32 => BatchRoute))) private batchRoutes;
+    mapping(bytes32 => mapping(bytes32 => mapping(RemovalReason => uint64))) private removalTotals;
 
     mapping(bytes32 => mapping(bytes32 => EntityLink))
         private entityLinks;
@@ -232,6 +263,19 @@ contract TraceForge is Ownable2Step {
     error InvalidCustodyRecipient();
 
     error StaleCustody(bytes32 tenantId, bytes32 entityId, uint64 expectedVersion, uint64 actualVersion);
+
+    error InvalidQuantity();
+    error ProductNotFound(bytes32 tenantId, bytes32 entityId);
+    error BatchOperationRequired();
+    error ProductRemovalRequired();
+    error NotBatchProduct();
+    error InvalidRouteId();
+    error RouteAlreadyExists(bytes32 routeId);
+    error RouteNotFound(bytes32 routeId);
+    error NotRouteOwner(bytes32 routeId, bytes32 organizationId);
+    error InsufficientQuantity(uint64 requested, uint64 available);
+    error StaleRoute(bytes32 routeId, uint64 expectedVersion, uint64 actualVersion);
+    error InvalidRemovalReasonText();
 
     error InvalidLinkType();
 
@@ -384,6 +428,51 @@ contract TraceForge is Ownable2Step {
         bytes32 eventType,
         bytes32 evidenceHash,
         uint64 custodyVersion,
+        uint64 timestamp
+    );
+
+    event ProductRegistered(
+        bytes32 indexed tenantId,
+        bytes32 indexed entityId,
+        bytes32 indexed rootRouteId,
+        bytes32 organizationId,
+        address actor,
+        bytes32 registrationMetadataHash,
+        uint64 initialQuantity,
+        uint64 timestamp
+    );
+
+    event BatchReceived(
+        bytes32 indexed tenantId,
+        bytes32 indexed entityId,
+        bytes32 indexed sourceRouteId,
+        bytes32 receivedRouteId,
+        bytes32 fromOrganizationId,
+        bytes32 toOrganizationId,
+        address actor,
+        uint64 quantity,
+        uint64 sourceAvailableQuantity,
+        uint64 sourceForwardedQuantity,
+        uint64 sourceVersion,
+        bytes32 evidenceHash,
+        uint64 timestamp
+    );
+
+    event QuantityRemoved(
+        bytes32 indexed tenantId,
+        bytes32 indexed entityId,
+        bytes32 indexed routeId,
+        bytes32 organizationId,
+        address actor,
+        uint64 quantity,
+        RemovalReason reason,
+        string reasonText,
+        uint64 routeAvailableQuantity,
+        uint64 routeRemovedQuantity,
+        uint64 version,
+        uint64 availableQuantity,
+        uint64 removedQuantity,
+        bytes32 evidenceHash,
         uint64 timestamp
     );
 
@@ -981,6 +1070,13 @@ contract TraceForge is Ownable2Step {
         bytes32 metadataHash,
         bytes32 initialState
     ) external {
+        _createEntity(tenantId, roleId, entityId, entityType, metadataHash, initialState);
+    }
+
+    function _createEntity(
+        bytes32 tenantId, bytes32 roleId, bytes32 entityId,
+        bytes32 entityType, bytes32 metadataHash, bytes32 initialState
+    ) internal {
         if (entityId == bytes32(0)) {
             revert InvalidEntityId();
         }
@@ -1038,6 +1134,194 @@ contract TraceForge is Ownable2Step {
             initialState,
             timestamp
         );
+    }
+
+    /// Business product registration; quantity is immutable and defaults in the API.
+    function createProduct(
+        bytes32 tenantId, bytes32 roleId, bytes32 entityId,
+        bytes32 metadataHash, uint64 quantity
+    ) external {
+        if (quantity == 0 || quantity > MAX_PRODUCT_QUANTITY) revert InvalidQuantity();
+        _createEntity(tenantId, roleId, entityId, keccak256("PRODUCT"), metadataHash, keccak256("PRODUCED"));
+        Entity storage entity = entities[tenantId][entityId];
+        bytes32 organizationId = entity.currentCustodian;
+        bytes32 rootRouteId;
+        if (quantity > 1) {
+            rootRouteId = computeRootRouteId(tenantId, entityId);
+            batchRoutes[tenantId][entityId][rootRouteId] = BatchRoute({
+                organizationId: organizationId, parentRouteId: bytes32(0),
+                receivedQuantity: quantity, availableQuantity: quantity,
+                forwardedQuantity: 0, removedQuantity: 0, version: 0,
+                createdAt: entity.createdAt, exists: true
+            });
+            // No single custodian represents all branches of a batch.
+            entity.currentCustodian = bytes32(0);
+        }
+        products[tenantId][entityId] = Product({
+            registrationMetadataHash: metadataHash, originOrganizationId: organizationId,
+            rootRouteId: rootRouteId, initialQuantity: quantity,
+            availableQuantity: quantity, removedQuantity: 0, exists: true
+        });
+        emit ProductRegistered(tenantId, entityId, rootRouteId, organizationId, msg.sender,
+            metadataHash, quantity, entity.createdAt);
+    }
+
+    function computeRootRouteId(bytes32 tenantId, bytes32 entityId) public view returns (bytes32) {
+        return keccak256(abi.encode(keccak256("TRACEFORGE_ROOT_ROUTE_V1"), block.chainid, address(this), tenantId, entityId));
+    }
+
+    function getProduct(bytes32 tenantId, bytes32 entityId) external view returns (Product memory) {
+        _requireProduct(tenantId, entityId);
+        return products[tenantId][entityId];
+    }
+
+    function getBatchRoute(bytes32 tenantId, bytes32 entityId, bytes32 routeId) external view returns (BatchRoute memory) {
+        _requireProduct(tenantId, entityId);
+        _requireRoute(tenantId, entityId, routeId);
+        return batchRoutes[tenantId][entityId][routeId];
+    }
+
+    function getRemovalTotal(bytes32 tenantId, bytes32 entityId, RemovalReason reason) external view returns (uint64) {
+        _requireProduct(tenantId, entityId);
+        return removalTotals[tenantId][entityId][reason];
+    }
+
+    /// Physical receipt is declared by the receiver; source approval is not required.
+    function claimBatch(
+        bytes32 tenantId, bytes32 entityId, bytes32 sourceRouteId, bytes32 receivedRouteId,
+        uint64 expectedVersion, uint64 quantity, bytes32 evidenceHash
+    ) external {
+        bytes32 receiver = _requireActiveBusinessWallet();
+        _requireTenantActive(tenantId);
+        _requireEntityOpen(tenantId, entityId);
+        _requireProduct(tenantId, entityId);
+        if (products[tenantId][entityId].initialQuantity == 1) revert NotBatchProduct();
+        if (evidenceHash == bytes32(0)) revert InvalidEvidenceHash();
+        _requireRoute(tenantId, entityId, sourceRouteId);
+        BatchRoute storage source = batchRoutes[tenantId][entityId][sourceRouteId];
+        if (receiver == source.organizationId) revert InvalidCustodyRecipient();
+        _requireRouteVersion(sourceRouteId, source.version, expectedVersion);
+        _requireQuantity(quantity, source.availableQuantity);
+        if (receivedRouteId == bytes32(0)) revert InvalidRouteId();
+        if (batchRoutes[tenantId][entityId][receivedRouteId].exists) revert RouteAlreadyExists(receivedRouteId);
+
+        source.availableQuantity -= quantity;
+        source.forwardedQuantity += quantity;
+        source.version += 1;
+        uint64 timestamp = uint64(block.timestamp);
+        batchRoutes[tenantId][entityId][receivedRouteId] = BatchRoute({
+            organizationId: receiver, parentRouteId: sourceRouteId,
+            receivedQuantity: quantity, availableQuantity: quantity,
+            forwardedQuantity: 0, removedQuantity: 0, version: 0,
+            createdAt: timestamp, exists: true
+        });
+        entities[tenantId][entityId].updatedAt = timestamp;
+        emit BatchReceived(tenantId, entityId, sourceRouteId, receivedRouteId,
+            source.organizationId, receiver, msg.sender, quantity, source.availableQuantity,
+            source.forwardedQuantity, source.version, evidenceHash, timestamp);
+    }
+
+    /// Only the holder may remove quantity. The full written reason is immutable in the log.
+    function removeProduct(
+        bytes32 tenantId, bytes32 entityId, bytes32 routeId, uint64 quantity,
+        uint64 expectedVersion, RemovalReason reason, string calldata reasonText, bytes32 evidenceHash
+    ) external {
+        bytes32 organizationId = _requireActiveBusinessWallet();
+        _requireTenantActive(tenantId);
+        _requireEntityOpen(tenantId, entityId);
+        _requireProduct(tenantId, entityId);
+        if (evidenceHash == bytes32(0)) revert InvalidEvidenceHash();
+        _validateRemovalReason(reason, reasonText);
+        Product storage product = products[tenantId][entityId];
+        uint64 version;
+        uint64 routeAvailable;
+        uint64 routeRemoved;
+        if (product.initialQuantity > 1) {
+            _requireRoute(tenantId, entityId, routeId);
+            BatchRoute storage route = batchRoutes[tenantId][entityId][routeId];
+            if (route.organizationId != organizationId) revert NotRouteOwner(routeId, organizationId);
+            _requireRouteVersion(routeId, route.version, expectedVersion);
+            _requireQuantity(quantity, route.availableQuantity);
+            route.availableQuantity -= quantity;
+            route.removedQuantity += quantity;
+            route.version += 1;
+            version = route.version;
+            routeAvailable = route.availableQuantity;
+            routeRemoved = route.removedQuantity;
+        } else {
+            if (routeId != bytes32(0)) revert InvalidRouteId();
+            _requireCurrentEntityCustodian(tenantId, entityId);
+            version = custodyVersions[tenantId][entityId];
+            if (expectedVersion != version) revert StaleCustody(tenantId, entityId, expectedVersion, version);
+            _requireQuantity(quantity, product.availableQuantity);
+            custodyVersions[tenantId][entityId] = ++version;
+            routeRemoved = quantity;
+        }
+        product.availableQuantity -= quantity;
+        product.removedQuantity += quantity;
+        removalTotals[tenantId][entityId][reason] += quantity;
+        Entity storage entity = entities[tenantId][entityId];
+        entity.updatedAt = uint64(block.timestamp);
+        entity.closed = product.availableQuantity == 0;
+        emit QuantityRemoved(tenantId, entityId, routeId, organizationId, msg.sender,
+            quantity, reason, reasonText, routeAvailable, routeRemoved, version,
+            product.availableQuantity, product.removedQuantity, evidenceHash, entity.updatedAt);
+    }
+
+    function _requireProduct(bytes32 tenantId, bytes32 entityId) internal view {
+        if (!products[tenantId][entityId].exists) revert ProductNotFound(tenantId, entityId);
+    }
+
+    function _requireRoute(bytes32 tenantId, bytes32 entityId, bytes32 routeId) internal view {
+        if (!batchRoutes[tenantId][entityId][routeId].exists) revert RouteNotFound(routeId);
+    }
+
+    function _requireRouteVersion(bytes32 routeId, uint64 actual, uint64 expected) internal pure {
+        if (actual != expected) revert StaleRoute(routeId, expected, actual);
+    }
+
+    function _requireQuantity(uint64 quantity, uint64 available) internal pure {
+        if (quantity == 0) revert InvalidQuantity();
+        if (quantity > available) revert InsufficientQuantity(quantity, available);
+    }
+
+    function _requireSingleCustodian(bytes32 tenantId, bytes32 entityId) internal view {
+        if (products[tenantId][entityId].initialQuantity > 1) revert BatchOperationRequired();
+    }
+
+    // Validate UTF-8 even for direct contract callers, and bound both bytes and characters.
+    function _validateRemovalReason(RemovalReason reason, string calldata text) internal pure {
+        bytes calldata raw = bytes(text);
+        if (raw.length > 1024) revert InvalidRemovalReasonText();
+        uint256 characters;
+        bool hasText;
+        for (uint256 i; i < raw.length;) {
+            uint256 lead = uint8(raw[i]);
+            uint256 size;
+            uint256 codepoint;
+            if (lead < 0x80) { size = 1; codepoint = lead; }
+            else if (lead >= 0xc2 && lead <= 0xdf) { size = 2; codepoint = lead & 0x1f; }
+            else if (lead >= 0xe0 && lead <= 0xef) { size = 3; codepoint = lead & 0x0f; }
+            else if (lead >= 0xf0 && lead <= 0xf4) { size = 4; codepoint = lead & 0x07; }
+            else revert InvalidRemovalReasonText();
+            if (i + size > raw.length) revert InvalidRemovalReasonText();
+            for (uint256 j = 1; j < size; ++j) {
+                uint256 tail = uint8(raw[i + j]);
+                if ((tail & 0xc0) != 0x80) revert InvalidRemovalReasonText();
+                codepoint = (codepoint << 6) | (tail & 0x3f);
+            }
+            if ((size == 3 && (codepoint < 0x800 || (codepoint >= 0xd800 && codepoint <= 0xdfff))) ||
+                (size == 4 && (codepoint < 0x10000 || codepoint > 0x10ffff))) revert InvalidRemovalReasonText();
+            if ((codepoint < 0x20 && codepoint != 9 && codepoint != 10 && codepoint != 13) ||
+                (codepoint >= 0x7f && codepoint <= 0x9f)) revert InvalidRemovalReasonText();
+            bool whitespace = codepoint <= 0x20 || codepoint == 0xa0 || codepoint == 0x1680 ||
+                (codepoint >= 0x2000 && codepoint <= 0x200a) || codepoint == 0x2028 || codepoint == 0x2029 ||
+                codepoint == 0x202f || codepoint == 0x205f || codepoint == 0x3000 || codepoint == 0xfeff;
+            if (!whitespace) hasText = true;
+            if (++characters > 256) revert InvalidRemovalReasonText();
+            i += size;
+        }
+        if (reason != RemovalReason.Sold && !hasText) revert InvalidRemovalReasonText();
     }
 
 
@@ -1195,6 +1479,7 @@ contract TraceForge is Ownable2Step {
         bytes32 receiver = _requireActiveBusinessWallet();
         _requireTenantActive(tenantId);
         _requireEntityOpen(tenantId, entityId);
+        _requireSingleCustodian(tenantId, entityId);
         _validateTraceEvidence(eventType, evidenceHash);
         uint64 version = custodyVersions[tenantId][entityId];
         if (expectedVersion != version) revert StaleCustody(tenantId, entityId, expectedVersion, version);
@@ -1211,6 +1496,7 @@ contract TraceForge is Ownable2Step {
 
     function getCustodyVersion(bytes32 tenantId, bytes32 entityId) external view returns (uint64) {
         _requireEntityExists(tenantId, entityId);
+        _requireSingleCustodian(tenantId, entityId);
         return custodyVersions[tenantId][entityId];
     }
 
@@ -1430,6 +1716,10 @@ contract TraceForge is Ownable2Step {
             tenantId,
             entityId
         );
+
+        _requireSingleCustodian(tenantId, entityId);
+        // New singles use removeProduct too, retaining quantity/reason/version evidence.
+        if (products[tenantId][entityId].exists) revert ProductRemovalRequired();
 
         _validateTraceEvidence(
             eventType,
@@ -1827,6 +2117,8 @@ contract TraceForge is Ownable2Step {
             tenantId,
             entityId
         );
+
+        _requireSingleCustodian(tenantId, entityId);
 
         organizationId =
             walletBindings[msg.sender]
