@@ -40,12 +40,14 @@ Production creation, edits and relationships retain workspace permissions. Capab
 
 The 2026-10-06 contract upgrade implements the parent's
 [batch quantity specification](https://github.com/aididalam/traceforge/blob/main/docs/batch-quantity-plan.md).
-API/indexer workflow implementation and live deployment follow in later phases.
+The matching API/indexer/UI workflows are activated locally on the Pi chain;
+see the parent's
+[Phase 6 activation](https://github.com/aididalam/traceforge/blob/main/docs/batch-activation-phase6.md).
 
 - `createProduct(tenantId, roleId, entityId, metadataHash, quantity)` requires the
   production create capability. Count is 1 through 9,007,199,254,740,991; one is
-  a single, greater than one is a batch. API defaulting/required business-ID
-  validation belongs to the next phase.
+  a single, greater than one is a batch. The API defaults omitted count to one
+  and validates the required business product/batch ID.
 - `getProduct` exposes immutable registration metadata hash, origin, initial
   quantity and current available/removed totals. Later metadata edits do not
   change registration identity or classification.
@@ -94,6 +96,9 @@ node scripts/verify-deployment.mjs
 
 After compiling, run `python3 ops/refresh-contract-abi.py` from the parent checkout
 to synchronize API/indexer ABIs, or append `--check` to verify them without edits.
-Active deployment records are in `deployments/9009`; the quantity contract is not
-yet deployed there. Contract tests cover the new accounting, and isolated API
-integration checks compatibility with the existing direct-claim flow.
+The active deployment is [deployments/9009/TraceForge.json](deployments/9009/TraceForge.json):
+`0xf286a8f7bbbe4e5f2337e1701524368794de5672`, chain 9009, block 27861.
+The [live operation receipt](deployments/9009/operations/batch-demo.json) records
+31 confirmed business operations, including setup, million-item partial receipts,
+returns, bulk removals and single-item regressions. Retired receipts remain in
+Git history; the old contract remains historical ledger data.

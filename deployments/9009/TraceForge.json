@@ -6,24 +6,24 @@
   },
   "contract": {
     "name": "TraceForge",
-    "address": "0x07bf849fb7e97fa174791bdf3bf9bffa621e145b",
+    "address": "0xf286a8f7bbbe4e5f2337e1701524368794de5672",
     "owner": "0x41903e34609e938BF6B452A47E1F87aeFB456AaD",
     "pendingOwner": "0x0000000000000000000000000000000000000000"
   },
   "deployment": {
     "deployer": "0x41903e34609e938BF6B452A47E1F87aeFB456AaD",
-    "transactionHash": "0xa7a2663b48d970d9c8be7fc062b8887403a9811a61e298dee9fcd634b88f6ca6",
-    "blockNumber": "71",
-    "blockTimestamp": "1791218040",
-    "deployedAt": "2026-10-05T16:34:00.000Z",
-    "gasUsed": "2914548",
+    "transactionHash": "0x7e46386d0b90dd147b1745638bd42a7a2a13f6d82103f4173bf0a3399ff108c9",
+    "blockNumber": "27861",
+    "blockTimestamp": "1791273620",
+    "deployedAt": "2026-10-06T08:00:20.000Z",
+    "gasUsed": "4211381",
     "effectiveGasPrice": "0"
   },
   "artifact": {
-    "creationBytes": 13262,
-    "runtimeBytes": 13131,
-    "expectedRuntimeHash": "0xaf14115fa014b0868ffa446729a398f5a2aeb5d9fbdc9b41551f8e33d746e439",
-    "deployedRuntimeHash": "0xaf14115fa014b0868ffa446729a398f5a2aeb5d9fbdc9b41551f8e33d746e439",
+    "creationBytes": 19266,
+    "runtimeBytes": 19135,
+    "expectedRuntimeHash": "0x8b81a848236820215ceca237aa5cd419b858733688db3814e077199087c9b0e8",
+    "deployedRuntimeHash": "0x8b81a848236820215ceca237aa5cd419b858733688db3814e077199087c9b0e8",
     "runtimeMatches": true
   }
 }

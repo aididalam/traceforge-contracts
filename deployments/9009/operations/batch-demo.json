@@ -1,0 +1,1063 @@
+{
+  "schemaVersion": 1,
+  "passed": true,
+  "network": {
+    "chainId": 9009,
+    "deploymentBlock": "27861"
+  },
+  "contract": {
+    "address": "0xf286a8f7bbbe4e5f2337e1701524368794de5672",
+    "runtimeBytecodeHash": "0x8b81a848236820215ceca237aa5cd419b858733688db3814e077199087c9b0e8"
+  },
+  "businesses": [
+    {
+      "name": "TraceForge Demo Producer",
+      "type": "Producer",
+      "organizationId": "0xad01ace8768ef70034ba3be415c26c64d3c64ebd61a3861d7537c5aa96deb19b",
+      "tenantId": "0x1f882e77f75c8c6e61071a900076d73f717d933125260a6cba25263f7bc371f6",
+      "businessCode": "A"
+    },
+    {
+      "name": "TraceForge Demo Distributor",
+      "type": "Distributor",
+      "organizationId": "0xfda022598469f9f2307cf8813bc661c75776c4c487617007dfb0b68cc93de101",
+      "tenantId": "0xb749617987815a8bd0941eb5d1399679934c9aa07c1afb10da587a46875a6b25",
+      "businessCode": "B"
+    },
+    {
+      "name": "TraceForge Demo Shop",
+      "type": "Shop",
+      "organizationId": "0x556a0f7ef26b80fdae70b0159e24c8c9005517d4315b51c1aec4fe4803f9349f",
+      "tenantId": "0x9bcbd4a24688c3adcc6e9d8d37bc10b0fa2dca0e8bfb88e87673d7e33806f027",
+      "businessCode": "C"
+    },
+    {
+      "name": "TraceForge Demo Distributor B",
+      "type": "Cold storage service",
+      "organizationId": "0xf6526988692d01de14c625ab4f029e7250fa5c38fb6d28b2619265b1f57a77f1",
+      "tenantId": "0xb45ff58a78e8762ab0315fe8c61bf1331f30d1929f2bc2ca747003379dffd92e",
+      "businessCode": "D"
+    }
+  ],
+  "checks": {
+    "independentSignup": true,
+    "noReceivingMembership": true,
+    "routeConservation": true,
+    "registrationHashUnchanged": true,
+    "exactOnChainReasons": true,
+    "duplicateSearch": true,
+    "privatePreview": true,
+    "nonOwnerRejected": true,
+    "overdrawRejected": true,
+    "staleReceiptRejected": true,
+    "selfReceiptRejected": true,
+    "closedBatchRejected": true,
+    "incrementalReplay": true,
+    "fullRebuild": true,
+    "journalsConfirmed": true,
+    "serializedTransactionsCleared": true
+  },
+  "products": [
+    {
+      "trackingId": "0x997dc9c48380d19a8d0f583452286557dd72f0ad084ad7dda1e70f0312039449",
+      "name": "Demo Cola batch",
+      "externalId": "A / COLA-BATCH-20261006",
+      "shortCode": "e382nq6drb4d",
+      "initialQuantity": "1000000",
+      "availableQuantity": "899300",
+      "removedQuantity": "100700",
+      "isBatch": true,
+      "closed": false,
+      "rootRouteId": "0x4733be381fcb1a41babd33de848f96b4b19b7829c4fdc32066f5856647168978",
+      "registrationMetadataHash": "0x56203fb4e9b9e6521e7cebdb3743392d8deed43d88d8a3e6e443718784c98fae",
+      "routes": 7,
+      "removals": 3,
+      "owned": {
+        "0xad01ace8768ef70034ba3be415c26c64d3c64ebd61a3861d7537c5aa96deb19b": "50000",
+        "0xfda022598469f9f2307cf8813bc661c75776c4c487617007dfb0b68cc93de101": "249500",
+        "0xf6526988692d01de14c625ab4f029e7250fa5c38fb6d28b2619265b1f57a77f1": "250000",
+        "0x556a0f7ef26b80fdae70b0159e24c8c9005517d4315b51c1aec4fe4803f9349f": "349800"
+      },
+      "reasons": {
+        "Sold": "100000",
+        "Lost": "200",
+        "Damaged": "0",
+        "Spoiled": "500",
+        "Disposed": "0",
+        "Other": "0"
+      },
+      "tenantId": "0x1f882e77f75c8c6e61071a900076d73f717d933125260a6cba25263f7bc371f6",
+      "publish": true
+    },
+    {
+      "trackingId": "0x8835b660cf9cb33de1e7533e596aeb5cfde74f8aaa6cf965347ee7f52043db04",
+      "name": "Another Cola batch",
+      "externalId": "A / COLA-BATCH-20261006",
+      "shortCode": "3ybb67s6v1qe",
+      "initialQuantity": "10",
+      "availableQuantity": "10",
+      "removedQuantity": "0",
+      "isBatch": true,
+      "closed": false,
+      "rootRouteId": "0x55ddf350e4cf3117edf2a5e37a5bc796294f038356fa82c75826e80742ef2f2d",
+      "registrationMetadataHash": "0x0b65c83b50fd6b6bd58055f12321cb4b22bc9037fed0717b23122b5bec14be29",
+      "routes": 1,
+      "removals": 0,
+      "owned": {
+        "0xad01ace8768ef70034ba3be415c26c64d3c64ebd61a3861d7537c5aa96deb19b": "10"
+      },
+      "reasons": {
+        "Sold": "0",
+        "Lost": "0",
+        "Damaged": "0",
+        "Spoiled": "0",
+        "Disposed": "0",
+        "Other": "0"
+      },
+      "tenantId": "0x1f882e77f75c8c6e61071a900076d73f717d933125260a6cba25263f7bc371f6",
+      "publish": true
+    },
+    {
+      "trackingId": "0x7c3de209da73eb0f6b8cc52cbfd420dce3a309e5b162492e3d25eee5a866c9c7",
+      "name": "Demo Bottle",
+      "externalId": "A / SERIAL-20261006-001",
+      "shortCode": "0jx8h77sec5n",
+      "initialQuantity": "1",
+      "availableQuantity": "1",
+      "removedQuantity": "0",
+      "isBatch": false,
+      "closed": false,
+      "rootRouteId": "0x0000000000000000000000000000000000000000000000000000000000000000",
+      "registrationMetadataHash": "0xdb92aa474c906892730d2984223af2072e26a5be0f075cf30fa9916fa50f964b",
+      "routes": 0,
+      "removals": 0,
+      "owned": {},
+      "reasons": {
+        "Sold": "0",
+        "Lost": "0",
+        "Damaged": "0",
+        "Spoiled": "0",
+        "Disposed": "0",
+        "Other": "0"
+      },
+      "tenantId": "0x1f882e77f75c8c6e61071a900076d73f717d933125260a6cba25263f7bc371f6",
+      "publish": true
+    },
+    {
+      "trackingId": "0xd9dad8738bd89421ddf30444b1979e231211f5043e7c2e9937c372b9fb900c8a",
+      "name": "Demo Glass Bottle",
+      "externalId": "A / SERIAL-20261006-002",
+      "shortCode": "d2r9mqhghemt",
+      "initialQuantity": "1",
+      "availableQuantity": "0",
+      "removedQuantity": "1",
+      "isBatch": false,
+      "closed": true,
+      "rootRouteId": "0x0000000000000000000000000000000000000000000000000000000000000000",
+      "registrationMetadataHash": "0x0ea389c58632a17596c273e625bd0dc4692905d3dc6f52e82b48e02551469241",
+      "routes": 0,
+      "removals": 1,
+      "owned": {},
+      "reasons": {
+        "Sold": "0",
+        "Lost": "0",
+        "Damaged": "1",
+        "Spoiled": "0",
+        "Disposed": "0",
+        "Other": "0"
+      },
+      "tenantId": "0x1f882e77f75c8c6e61071a900076d73f717d933125260a6cba25263f7bc371f6",
+      "publish": true
+    },
+    {
+      "trackingId": "0x577d48c08b2df2e9187da72c50776804653fb9ca7e6aaf5b6610f6cc9826af2b",
+      "name": "Demo completed batch",
+      "externalId": "A / COMPLETE-BATCH-20261006",
+      "shortCode": "32sa43bwkqqk",
+      "initialQuantity": "10",
+      "availableQuantity": "0",
+      "removedQuantity": "10",
+      "isBatch": true,
+      "closed": true,
+      "rootRouteId": "0xe525014a483b9307e9781fe1c6b60707f9592c46fd6048ab022f27c0054b77b5",
+      "registrationMetadataHash": "0xe31a97c282a8108c5c04f5471329299ec6b2156ed473ebc4477501b632afcf59",
+      "routes": 3,
+      "removals": 3,
+      "owned": {
+        "0xad01ace8768ef70034ba3be415c26c64d3c64ebd61a3861d7537c5aa96deb19b": "0",
+        "0xf6526988692d01de14c625ab4f029e7250fa5c38fb6d28b2619265b1f57a77f1": "0",
+        "0x556a0f7ef26b80fdae70b0159e24c8c9005517d4315b51c1aec4fe4803f9349f": "0"
+      },
+      "reasons": {
+        "Sold": "6",
+        "Lost": "3",
+        "Damaged": "0",
+        "Spoiled": "0",
+        "Disposed": "1",
+        "Other": "0"
+      },
+      "tenantId": "0x1f882e77f75c8c6e61071a900076d73f717d933125260a6cba25263f7bc371f6",
+      "publish": true
+    },
+    {
+      "trackingId": "0x5add60e24adf044d48a3bb473e17b8f205ec45bb4b08ce03c5a3f21f69885a3b",
+      "name": "Private development batch",
+      "externalId": "PRIVATE-BATCH-20261006",
+      "shortCode": "jm28wfwsz4e7",
+      "initialQuantity": "50",
+      "availableQuantity": "50",
+      "removedQuantity": "0",
+      "isBatch": true,
+      "closed": false,
+      "rootRouteId": "0xd19d8d759eb0054319016aed92b1cb9cc3cf8d338a072b970aa00cde4eb78b45",
+      "registrationMetadataHash": "0x9bf84aeaa4e396964b7a0c0ae7d843a9c1f37413387fadd627a58662fbe60a1e",
+      "routes": 1,
+      "removals": 0,
+      "owned": {
+        "0xad01ace8768ef70034ba3be415c26c64d3c64ebd61a3861d7537c5aa96deb19b": "50"
+      },
+      "reasons": {
+        "Sold": "0",
+        "Lost": "0",
+        "Damaged": "0",
+        "Spoiled": "0",
+        "Disposed": "0",
+        "Other": "0"
+      },
+      "tenantId": "0x1f882e77f75c8c6e61071a900076d73f717d933125260a6cba25263f7bc371f6",
+      "publish": false
+    }
+  ],
+  "checkpoints": [
+    {
+      "trackingId": "0x997dc9c48380d19a8d0f583452286557dd72f0ad084ad7dda1e70f0312039449",
+      "name": "Demo Cola batch",
+      "externalId": "A / COLA-BATCH-20261006",
+      "shortCode": "e382nq6drb4d",
+      "initialQuantity": "1000000",
+      "availableQuantity": "1000000",
+      "removedQuantity": "0",
+      "isBatch": true,
+      "closed": false,
+      "rootRouteId": "0x4733be381fcb1a41babd33de848f96b4b19b7829c4fdc32066f5856647168978",
+      "registrationMetadataHash": "0x56203fb4e9b9e6521e7cebdb3743392d8deed43d88d8a3e6e443718784c98fae",
+      "routes": 1,
+      "removals": 0,
+      "owned": {
+        "0xad01ace8768ef70034ba3be415c26c64d3c64ebd61a3861d7537c5aa96deb19b": "1000000"
+      },
+      "reasons": {
+        "Sold": "0",
+        "Lost": "0",
+        "Damaged": "0",
+        "Spoiled": "0",
+        "Disposed": "0",
+        "Other": "0"
+      }
+    },
+    {
+      "trackingId": "0x997dc9c48380d19a8d0f583452286557dd72f0ad084ad7dda1e70f0312039449",
+      "name": "Demo Cola batch",
+      "externalId": "A / COLA-BATCH-20261006",
+      "shortCode": "e382nq6drb4d",
+      "initialQuantity": "1000000",
+      "availableQuantity": "1000000",
+      "removedQuantity": "0",
+      "isBatch": true,
+      "closed": false,
+      "rootRouteId": "0x4733be381fcb1a41babd33de848f96b4b19b7829c4fdc32066f5856647168978",
+      "registrationMetadataHash": "0x56203fb4e9b9e6521e7cebdb3743392d8deed43d88d8a3e6e443718784c98fae",
+      "routes": 2,
+      "removals": 0,
+      "owned": {
+        "0xad01ace8768ef70034ba3be415c26c64d3c64ebd61a3861d7537c5aa96deb19b": "400000",
+        "0xfda022598469f9f2307cf8813bc661c75776c4c487617007dfb0b68cc93de101": "600000"
+      },
+      "reasons": {
+        "Sold": "0",
+        "Lost": "0",
+        "Damaged": "0",
+        "Spoiled": "0",
+        "Disposed": "0",
+        "Other": "0"
+      }
+    },
+    {
+      "trackingId": "0x997dc9c48380d19a8d0f583452286557dd72f0ad084ad7dda1e70f0312039449",
+      "name": "Demo Cola batch",
+      "externalId": "A / COLA-BATCH-20261006",
+      "shortCode": "e382nq6drb4d",
+      "initialQuantity": "1000000",
+      "availableQuantity": "1000000",
+      "removedQuantity": "0",
+      "isBatch": true,
+      "closed": false,
+      "rootRouteId": "0x4733be381fcb1a41babd33de848f96b4b19b7829c4fdc32066f5856647168978",
+      "registrationMetadataHash": "0x56203fb4e9b9e6521e7cebdb3743392d8deed43d88d8a3e6e443718784c98fae",
+      "routes": 3,
+      "removals": 0,
+      "owned": {
+        "0xad01ace8768ef70034ba3be415c26c64d3c64ebd61a3861d7537c5aa96deb19b": "0",
+        "0xfda022598469f9f2307cf8813bc661c75776c4c487617007dfb0b68cc93de101": "600000",
+        "0xf6526988692d01de14c625ab4f029e7250fa5c38fb6d28b2619265b1f57a77f1": "400000"
+      },
+      "reasons": {
+        "Sold": "0",
+        "Lost": "0",
+        "Damaged": "0",
+        "Spoiled": "0",
+        "Disposed": "0",
+        "Other": "0"
+      }
+    },
+    {
+      "trackingId": "0x997dc9c48380d19a8d0f583452286557dd72f0ad084ad7dda1e70f0312039449",
+      "name": "Demo Cola batch",
+      "externalId": "A / COLA-BATCH-20261006",
+      "shortCode": "e382nq6drb4d",
+      "initialQuantity": "1000000",
+      "availableQuantity": "1000000",
+      "removedQuantity": "0",
+      "isBatch": true,
+      "closed": false,
+      "rootRouteId": "0x4733be381fcb1a41babd33de848f96b4b19b7829c4fdc32066f5856647168978",
+      "registrationMetadataHash": "0x56203fb4e9b9e6521e7cebdb3743392d8deed43d88d8a3e6e443718784c98fae",
+      "routes": 4,
+      "removals": 0,
+      "owned": {
+        "0xad01ace8768ef70034ba3be415c26c64d3c64ebd61a3861d7537c5aa96deb19b": "0",
+        "0xfda022598469f9f2307cf8813bc661c75776c4c487617007dfb0b68cc93de101": "350000",
+        "0xf6526988692d01de14c625ab4f029e7250fa5c38fb6d28b2619265b1f57a77f1": "400000",
+        "0x556a0f7ef26b80fdae70b0159e24c8c9005517d4315b51c1aec4fe4803f9349f": "250000"
+      },
+      "reasons": {
+        "Sold": "0",
+        "Lost": "0",
+        "Damaged": "0",
+        "Spoiled": "0",
+        "Disposed": "0",
+        "Other": "0"
+      }
+    },
+    {
+      "trackingId": "0x997dc9c48380d19a8d0f583452286557dd72f0ad084ad7dda1e70f0312039449",
+      "name": "Demo Cola batch",
+      "externalId": "A / COLA-BATCH-20261006",
+      "shortCode": "e382nq6drb4d",
+      "initialQuantity": "1000000",
+      "availableQuantity": "1000000",
+      "removedQuantity": "0",
+      "isBatch": true,
+      "closed": false,
+      "rootRouteId": "0x4733be381fcb1a41babd33de848f96b4b19b7829c4fdc32066f5856647168978",
+      "registrationMetadataHash": "0x56203fb4e9b9e6521e7cebdb3743392d8deed43d88d8a3e6e443718784c98fae",
+      "routes": 5,
+      "removals": 0,
+      "owned": {
+        "0xad01ace8768ef70034ba3be415c26c64d3c64ebd61a3861d7537c5aa96deb19b": "0",
+        "0xfda022598469f9f2307cf8813bc661c75776c4c487617007dfb0b68cc93de101": "350000",
+        "0xf6526988692d01de14c625ab4f029e7250fa5c38fb6d28b2619265b1f57a77f1": "250000",
+        "0x556a0f7ef26b80fdae70b0159e24c8c9005517d4315b51c1aec4fe4803f9349f": "400000"
+      },
+      "reasons": {
+        "Sold": "0",
+        "Lost": "0",
+        "Damaged": "0",
+        "Spoiled": "0",
+        "Disposed": "0",
+        "Other": "0"
+      }
+    },
+    {
+      "trackingId": "0x997dc9c48380d19a8d0f583452286557dd72f0ad084ad7dda1e70f0312039449",
+      "name": "Demo Cola batch",
+      "externalId": "A / COLA-BATCH-20261006",
+      "shortCode": "e382nq6drb4d",
+      "initialQuantity": "1000000",
+      "availableQuantity": "1000000",
+      "removedQuantity": "0",
+      "isBatch": true,
+      "closed": false,
+      "rootRouteId": "0x4733be381fcb1a41babd33de848f96b4b19b7829c4fdc32066f5856647168978",
+      "registrationMetadataHash": "0x56203fb4e9b9e6521e7cebdb3743392d8deed43d88d8a3e6e443718784c98fae",
+      "routes": 6,
+      "removals": 0,
+      "owned": {
+        "0xad01ace8768ef70034ba3be415c26c64d3c64ebd61a3861d7537c5aa96deb19b": "50000",
+        "0xfda022598469f9f2307cf8813bc661c75776c4c487617007dfb0b68cc93de101": "350000",
+        "0xf6526988692d01de14c625ab4f029e7250fa5c38fb6d28b2619265b1f57a77f1": "250000",
+        "0x556a0f7ef26b80fdae70b0159e24c8c9005517d4315b51c1aec4fe4803f9349f": "350000"
+      },
+      "reasons": {
+        "Sold": "0",
+        "Lost": "0",
+        "Damaged": "0",
+        "Spoiled": "0",
+        "Disposed": "0",
+        "Other": "0"
+      }
+    },
+    {
+      "trackingId": "0x997dc9c48380d19a8d0f583452286557dd72f0ad084ad7dda1e70f0312039449",
+      "name": "Demo Cola batch",
+      "externalId": "A / COLA-BATCH-20261006",
+      "shortCode": "e382nq6drb4d",
+      "initialQuantity": "1000000",
+      "availableQuantity": "1000000",
+      "removedQuantity": "0",
+      "isBatch": true,
+      "closed": false,
+      "rootRouteId": "0x4733be381fcb1a41babd33de848f96b4b19b7829c4fdc32066f5856647168978",
+      "registrationMetadataHash": "0x56203fb4e9b9e6521e7cebdb3743392d8deed43d88d8a3e6e443718784c98fae",
+      "routes": 7,
+      "removals": 0,
+      "owned": {
+        "0xad01ace8768ef70034ba3be415c26c64d3c64ebd61a3861d7537c5aa96deb19b": "50000",
+        "0xfda022598469f9f2307cf8813bc661c75776c4c487617007dfb0b68cc93de101": "250000",
+        "0xf6526988692d01de14c625ab4f029e7250fa5c38fb6d28b2619265b1f57a77f1": "250000",
+        "0x556a0f7ef26b80fdae70b0159e24c8c9005517d4315b51c1aec4fe4803f9349f": "450000"
+      },
+      "reasons": {
+        "Sold": "0",
+        "Lost": "0",
+        "Damaged": "0",
+        "Spoiled": "0",
+        "Disposed": "0",
+        "Other": "0"
+      }
+    },
+    {
+      "trackingId": "0x997dc9c48380d19a8d0f583452286557dd72f0ad084ad7dda1e70f0312039449",
+      "name": "Demo Cola batch",
+      "externalId": "A / COLA-BATCH-20261006",
+      "shortCode": "e382nq6drb4d",
+      "initialQuantity": "1000000",
+      "availableQuantity": "900000",
+      "removedQuantity": "100000",
+      "isBatch": true,
+      "closed": false,
+      "rootRouteId": "0x4733be381fcb1a41babd33de848f96b4b19b7829c4fdc32066f5856647168978",
+      "registrationMetadataHash": "0x56203fb4e9b9e6521e7cebdb3743392d8deed43d88d8a3e6e443718784c98fae",
+      "routes": 7,
+      "removals": 1,
+      "owned": {
+        "0xad01ace8768ef70034ba3be415c26c64d3c64ebd61a3861d7537c5aa96deb19b": "50000",
+        "0xfda022598469f9f2307cf8813bc661c75776c4c487617007dfb0b68cc93de101": "250000",
+        "0xf6526988692d01de14c625ab4f029e7250fa5c38fb6d28b2619265b1f57a77f1": "250000",
+        "0x556a0f7ef26b80fdae70b0159e24c8c9005517d4315b51c1aec4fe4803f9349f": "350000"
+      },
+      "reasons": {
+        "Sold": "100000",
+        "Lost": "0",
+        "Damaged": "0",
+        "Spoiled": "0",
+        "Disposed": "0",
+        "Other": "0"
+      }
+    },
+    {
+      "trackingId": "0x997dc9c48380d19a8d0f583452286557dd72f0ad084ad7dda1e70f0312039449",
+      "name": "Demo Cola batch",
+      "externalId": "A / COLA-BATCH-20261006",
+      "shortCode": "e382nq6drb4d",
+      "initialQuantity": "1000000",
+      "availableQuantity": "899800",
+      "removedQuantity": "100200",
+      "isBatch": true,
+      "closed": false,
+      "rootRouteId": "0x4733be381fcb1a41babd33de848f96b4b19b7829c4fdc32066f5856647168978",
+      "registrationMetadataHash": "0x56203fb4e9b9e6521e7cebdb3743392d8deed43d88d8a3e6e443718784c98fae",
+      "routes": 7,
+      "removals": 2,
+      "owned": {
+        "0xad01ace8768ef70034ba3be415c26c64d3c64ebd61a3861d7537c5aa96deb19b": "50000",
+        "0xfda022598469f9f2307cf8813bc661c75776c4c487617007dfb0b68cc93de101": "250000",
+        "0xf6526988692d01de14c625ab4f029e7250fa5c38fb6d28b2619265b1f57a77f1": "250000",
+        "0x556a0f7ef26b80fdae70b0159e24c8c9005517d4315b51c1aec4fe4803f9349f": "349800"
+      },
+      "reasons": {
+        "Sold": "100000",
+        "Lost": "200",
+        "Damaged": "0",
+        "Spoiled": "0",
+        "Disposed": "0",
+        "Other": "0"
+      }
+    },
+    {
+      "trackingId": "0x997dc9c48380d19a8d0f583452286557dd72f0ad084ad7dda1e70f0312039449",
+      "name": "Demo Cola batch",
+      "externalId": "A / COLA-BATCH-20261006",
+      "shortCode": "e382nq6drb4d",
+      "initialQuantity": "1000000",
+      "availableQuantity": "899300",
+      "removedQuantity": "100700",
+      "isBatch": true,
+      "closed": false,
+      "rootRouteId": "0x4733be381fcb1a41babd33de848f96b4b19b7829c4fdc32066f5856647168978",
+      "registrationMetadataHash": "0x56203fb4e9b9e6521e7cebdb3743392d8deed43d88d8a3e6e443718784c98fae",
+      "routes": 7,
+      "removals": 3,
+      "owned": {
+        "0xad01ace8768ef70034ba3be415c26c64d3c64ebd61a3861d7537c5aa96deb19b": "50000",
+        "0xfda022598469f9f2307cf8813bc661c75776c4c487617007dfb0b68cc93de101": "249500",
+        "0xf6526988692d01de14c625ab4f029e7250fa5c38fb6d28b2619265b1f57a77f1": "250000",
+        "0x556a0f7ef26b80fdae70b0159e24c8c9005517d4315b51c1aec4fe4803f9349f": "349800"
+      },
+      "reasons": {
+        "Sold": "100000",
+        "Lost": "200",
+        "Damaged": "0",
+        "Spoiled": "500",
+        "Disposed": "0",
+        "Other": "0"
+      }
+    },
+    {
+      "trackingId": "0x8835b660cf9cb33de1e7533e596aeb5cfde74f8aaa6cf965347ee7f52043db04",
+      "name": "Another Cola batch",
+      "externalId": "A / COLA-BATCH-20261006",
+      "shortCode": "3ybb67s6v1qe",
+      "initialQuantity": "10",
+      "availableQuantity": "10",
+      "removedQuantity": "0",
+      "isBatch": true,
+      "closed": false,
+      "rootRouteId": "0x55ddf350e4cf3117edf2a5e37a5bc796294f038356fa82c75826e80742ef2f2d",
+      "registrationMetadataHash": "0x0b65c83b50fd6b6bd58055f12321cb4b22bc9037fed0717b23122b5bec14be29",
+      "routes": 1,
+      "removals": 0,
+      "owned": {
+        "0xad01ace8768ef70034ba3be415c26c64d3c64ebd61a3861d7537c5aa96deb19b": "10"
+      },
+      "reasons": {
+        "Sold": "0",
+        "Lost": "0",
+        "Damaged": "0",
+        "Spoiled": "0",
+        "Disposed": "0",
+        "Other": "0"
+      }
+    },
+    {
+      "trackingId": "0x7c3de209da73eb0f6b8cc52cbfd420dce3a309e5b162492e3d25eee5a866c9c7",
+      "name": "Demo Bottle",
+      "externalId": "A / SERIAL-20261006-001",
+      "shortCode": "0jx8h77sec5n",
+      "initialQuantity": "1",
+      "availableQuantity": "1",
+      "removedQuantity": "0",
+      "isBatch": false,
+      "closed": false,
+      "rootRouteId": "0x0000000000000000000000000000000000000000000000000000000000000000",
+      "registrationMetadataHash": "0xdb92aa474c906892730d2984223af2072e26a5be0f075cf30fa9916fa50f964b",
+      "routes": 0,
+      "removals": 0,
+      "owned": {},
+      "reasons": {
+        "Sold": "0",
+        "Lost": "0",
+        "Damaged": "0",
+        "Spoiled": "0",
+        "Disposed": "0",
+        "Other": "0"
+      }
+    },
+    {
+      "trackingId": "0xd9dad8738bd89421ddf30444b1979e231211f5043e7c2e9937c372b9fb900c8a",
+      "name": "Demo Glass Bottle",
+      "externalId": "A / SERIAL-20261006-002",
+      "shortCode": "d2r9mqhghemt",
+      "initialQuantity": "1",
+      "availableQuantity": "1",
+      "removedQuantity": "0",
+      "isBatch": false,
+      "closed": false,
+      "rootRouteId": "0x0000000000000000000000000000000000000000000000000000000000000000",
+      "registrationMetadataHash": "0x0ea389c58632a17596c273e625bd0dc4692905d3dc6f52e82b48e02551469241",
+      "routes": 0,
+      "removals": 0,
+      "owned": {},
+      "reasons": {
+        "Sold": "0",
+        "Lost": "0",
+        "Damaged": "0",
+        "Spoiled": "0",
+        "Disposed": "0",
+        "Other": "0"
+      }
+    },
+    {
+      "trackingId": "0xd9dad8738bd89421ddf30444b1979e231211f5043e7c2e9937c372b9fb900c8a",
+      "name": "Demo Glass Bottle",
+      "externalId": "A / SERIAL-20261006-002",
+      "shortCode": "d2r9mqhghemt",
+      "initialQuantity": "1",
+      "availableQuantity": "1",
+      "removedQuantity": "0",
+      "isBatch": false,
+      "closed": false,
+      "rootRouteId": "0x0000000000000000000000000000000000000000000000000000000000000000",
+      "registrationMetadataHash": "0x0ea389c58632a17596c273e625bd0dc4692905d3dc6f52e82b48e02551469241",
+      "routes": 0,
+      "removals": 0,
+      "owned": {},
+      "reasons": {
+        "Sold": "0",
+        "Lost": "0",
+        "Damaged": "0",
+        "Spoiled": "0",
+        "Disposed": "0",
+        "Other": "0"
+      }
+    },
+    {
+      "trackingId": "0xd9dad8738bd89421ddf30444b1979e231211f5043e7c2e9937c372b9fb900c8a",
+      "name": "Demo Glass Bottle",
+      "externalId": "A / SERIAL-20261006-002",
+      "shortCode": "d2r9mqhghemt",
+      "initialQuantity": "1",
+      "availableQuantity": "1",
+      "removedQuantity": "0",
+      "isBatch": false,
+      "closed": false,
+      "rootRouteId": "0x0000000000000000000000000000000000000000000000000000000000000000",
+      "registrationMetadataHash": "0x0ea389c58632a17596c273e625bd0dc4692905d3dc6f52e82b48e02551469241",
+      "routes": 0,
+      "removals": 0,
+      "owned": {},
+      "reasons": {
+        "Sold": "0",
+        "Lost": "0",
+        "Damaged": "0",
+        "Spoiled": "0",
+        "Disposed": "0",
+        "Other": "0"
+      }
+    },
+    {
+      "trackingId": "0xd9dad8738bd89421ddf30444b1979e231211f5043e7c2e9937c372b9fb900c8a",
+      "name": "Demo Glass Bottle",
+      "externalId": "A / SERIAL-20261006-002",
+      "shortCode": "d2r9mqhghemt",
+      "initialQuantity": "1",
+      "availableQuantity": "0",
+      "removedQuantity": "1",
+      "isBatch": false,
+      "closed": true,
+      "rootRouteId": "0x0000000000000000000000000000000000000000000000000000000000000000",
+      "registrationMetadataHash": "0x0ea389c58632a17596c273e625bd0dc4692905d3dc6f52e82b48e02551469241",
+      "routes": 0,
+      "removals": 1,
+      "owned": {},
+      "reasons": {
+        "Sold": "0",
+        "Lost": "0",
+        "Damaged": "1",
+        "Spoiled": "0",
+        "Disposed": "0",
+        "Other": "0"
+      }
+    },
+    {
+      "trackingId": "0x577d48c08b2df2e9187da72c50776804653fb9ca7e6aaf5b6610f6cc9826af2b",
+      "name": "Demo completed batch",
+      "externalId": "A / COMPLETE-BATCH-20261006",
+      "shortCode": "32sa43bwkqqk",
+      "initialQuantity": "10",
+      "availableQuantity": "10",
+      "removedQuantity": "0",
+      "isBatch": true,
+      "closed": false,
+      "rootRouteId": "0xe525014a483b9307e9781fe1c6b60707f9592c46fd6048ab022f27c0054b77b5",
+      "registrationMetadataHash": "0xe31a97c282a8108c5c04f5471329299ec6b2156ed473ebc4477501b632afcf59",
+      "routes": 1,
+      "removals": 0,
+      "owned": {
+        "0xad01ace8768ef70034ba3be415c26c64d3c64ebd61a3861d7537c5aa96deb19b": "10"
+      },
+      "reasons": {
+        "Sold": "0",
+        "Lost": "0",
+        "Damaged": "0",
+        "Spoiled": "0",
+        "Disposed": "0",
+        "Other": "0"
+      }
+    },
+    {
+      "trackingId": "0x577d48c08b2df2e9187da72c50776804653fb9ca7e6aaf5b6610f6cc9826af2b",
+      "name": "Demo completed batch",
+      "externalId": "A / COMPLETE-BATCH-20261006",
+      "shortCode": "32sa43bwkqqk",
+      "initialQuantity": "10",
+      "availableQuantity": "10",
+      "removedQuantity": "0",
+      "isBatch": true,
+      "closed": false,
+      "rootRouteId": "0xe525014a483b9307e9781fe1c6b60707f9592c46fd6048ab022f27c0054b77b5",
+      "registrationMetadataHash": "0xe31a97c282a8108c5c04f5471329299ec6b2156ed473ebc4477501b632afcf59",
+      "routes": 2,
+      "removals": 0,
+      "owned": {
+        "0xad01ace8768ef70034ba3be415c26c64d3c64ebd61a3861d7537c5aa96deb19b": "4",
+        "0xf6526988692d01de14c625ab4f029e7250fa5c38fb6d28b2619265b1f57a77f1": "6"
+      },
+      "reasons": {
+        "Sold": "0",
+        "Lost": "0",
+        "Damaged": "0",
+        "Spoiled": "0",
+        "Disposed": "0",
+        "Other": "0"
+      }
+    },
+    {
+      "trackingId": "0x577d48c08b2df2e9187da72c50776804653fb9ca7e6aaf5b6610f6cc9826af2b",
+      "name": "Demo completed batch",
+      "externalId": "A / COMPLETE-BATCH-20261006",
+      "shortCode": "32sa43bwkqqk",
+      "initialQuantity": "10",
+      "availableQuantity": "10",
+      "removedQuantity": "0",
+      "isBatch": true,
+      "closed": false,
+      "rootRouteId": "0xe525014a483b9307e9781fe1c6b60707f9592c46fd6048ab022f27c0054b77b5",
+      "registrationMetadataHash": "0xe31a97c282a8108c5c04f5471329299ec6b2156ed473ebc4477501b632afcf59",
+      "routes": 3,
+      "removals": 0,
+      "owned": {
+        "0xad01ace8768ef70034ba3be415c26c64d3c64ebd61a3861d7537c5aa96deb19b": "0",
+        "0xf6526988692d01de14c625ab4f029e7250fa5c38fb6d28b2619265b1f57a77f1": "6",
+        "0x556a0f7ef26b80fdae70b0159e24c8c9005517d4315b51c1aec4fe4803f9349f": "4"
+      },
+      "reasons": {
+        "Sold": "0",
+        "Lost": "0",
+        "Damaged": "0",
+        "Spoiled": "0",
+        "Disposed": "0",
+        "Other": "0"
+      }
+    },
+    {
+      "trackingId": "0x577d48c08b2df2e9187da72c50776804653fb9ca7e6aaf5b6610f6cc9826af2b",
+      "name": "Demo completed batch",
+      "externalId": "A / COMPLETE-BATCH-20261006",
+      "shortCode": "32sa43bwkqqk",
+      "initialQuantity": "10",
+      "availableQuantity": "4",
+      "removedQuantity": "6",
+      "isBatch": true,
+      "closed": false,
+      "rootRouteId": "0xe525014a483b9307e9781fe1c6b60707f9592c46fd6048ab022f27c0054b77b5",
+      "registrationMetadataHash": "0xe31a97c282a8108c5c04f5471329299ec6b2156ed473ebc4477501b632afcf59",
+      "routes": 3,
+      "removals": 1,
+      "owned": {
+        "0xad01ace8768ef70034ba3be415c26c64d3c64ebd61a3861d7537c5aa96deb19b": "0",
+        "0xf6526988692d01de14c625ab4f029e7250fa5c38fb6d28b2619265b1f57a77f1": "0",
+        "0x556a0f7ef26b80fdae70b0159e24c8c9005517d4315b51c1aec4fe4803f9349f": "4"
+      },
+      "reasons": {
+        "Sold": "6",
+        "Lost": "0",
+        "Damaged": "0",
+        "Spoiled": "0",
+        "Disposed": "0",
+        "Other": "0"
+      }
+    },
+    {
+      "trackingId": "0x577d48c08b2df2e9187da72c50776804653fb9ca7e6aaf5b6610f6cc9826af2b",
+      "name": "Demo completed batch",
+      "externalId": "A / COMPLETE-BATCH-20261006",
+      "shortCode": "32sa43bwkqqk",
+      "initialQuantity": "10",
+      "availableQuantity": "1",
+      "removedQuantity": "9",
+      "isBatch": true,
+      "closed": false,
+      "rootRouteId": "0xe525014a483b9307e9781fe1c6b60707f9592c46fd6048ab022f27c0054b77b5",
+      "registrationMetadataHash": "0xe31a97c282a8108c5c04f5471329299ec6b2156ed473ebc4477501b632afcf59",
+      "routes": 3,
+      "removals": 2,
+      "owned": {
+        "0xad01ace8768ef70034ba3be415c26c64d3c64ebd61a3861d7537c5aa96deb19b": "0",
+        "0xf6526988692d01de14c625ab4f029e7250fa5c38fb6d28b2619265b1f57a77f1": "0",
+        "0x556a0f7ef26b80fdae70b0159e24c8c9005517d4315b51c1aec4fe4803f9349f": "1"
+      },
+      "reasons": {
+        "Sold": "6",
+        "Lost": "3",
+        "Damaged": "0",
+        "Spoiled": "0",
+        "Disposed": "0",
+        "Other": "0"
+      }
+    },
+    {
+      "trackingId": "0x577d48c08b2df2e9187da72c50776804653fb9ca7e6aaf5b6610f6cc9826af2b",
+      "name": "Demo completed batch",
+      "externalId": "A / COMPLETE-BATCH-20261006",
+      "shortCode": "32sa43bwkqqk",
+      "initialQuantity": "10",
+      "availableQuantity": "0",
+      "removedQuantity": "10",
+      "isBatch": true,
+      "closed": true,
+      "rootRouteId": "0xe525014a483b9307e9781fe1c6b60707f9592c46fd6048ab022f27c0054b77b5",
+      "registrationMetadataHash": "0xe31a97c282a8108c5c04f5471329299ec6b2156ed473ebc4477501b632afcf59",
+      "routes": 3,
+      "removals": 3,
+      "owned": {
+        "0xad01ace8768ef70034ba3be415c26c64d3c64ebd61a3861d7537c5aa96deb19b": "0",
+        "0xf6526988692d01de14c625ab4f029e7250fa5c38fb6d28b2619265b1f57a77f1": "0",
+        "0x556a0f7ef26b80fdae70b0159e24c8c9005517d4315b51c1aec4fe4803f9349f": "0"
+      },
+      "reasons": {
+        "Sold": "6",
+        "Lost": "3",
+        "Damaged": "0",
+        "Spoiled": "0",
+        "Disposed": "1",
+        "Other": "0"
+      }
+    },
+    {
+      "trackingId": "0x5add60e24adf044d48a3bb473e17b8f205ec45bb4b08ce03c5a3f21f69885a3b",
+      "name": "Private development batch",
+      "externalId": "PRIVATE-BATCH-20261006",
+      "shortCode": "jm28wfwsz4e7",
+      "initialQuantity": "50",
+      "availableQuantity": "50",
+      "removedQuantity": "0",
+      "isBatch": true,
+      "closed": false,
+      "rootRouteId": "0xd19d8d759eb0054319016aed92b1cb9cc3cf8d338a072b970aa00cde4eb78b45",
+      "registrationMetadataHash": "0x9bf84aeaa4e396964b7a0c0ae7d843a9c1f37413387fadd627a58662fbe60a1e",
+      "routes": 1,
+      "removals": 0,
+      "owned": {
+        "0xad01ace8768ef70034ba3be415c26c64d3c64ebd61a3861d7537c5aa96deb19b": "50"
+      },
+      "reasons": {
+        "Sold": "0",
+        "Lost": "0",
+        "Damaged": "0",
+        "Spoiled": "0",
+        "Disposed": "0",
+        "Other": "0"
+      }
+    }
+  ],
+  "transactions": [
+    {
+      "operationId": "140e0715-e021-44e6-a176-5e5be85672c3",
+      "status": "CONFIRMED",
+      "transactionHash": "0x5df50a7b367bcaa58f6bc734c65fde9c390db6573a72db8a26825b9c446b4ee7",
+      "blockNumber": "27953",
+      "trackingId": "0x997dc9c48380d19a8d0f583452286557dd72f0ad084ad7dda1e70f0312039449",
+      "shortCode": "e382nq6drb4d"
+    },
+    {
+      "operationId": "1826d73a-f174-41a7-ae69-1ddb94ea706a",
+      "status": "CONFIRMED",
+      "transactionHash": "0x5e29c589d89f12b7c18b437f1ce0c3a672d9eb5314bf1c4dd365945cca0cc7fc",
+      "blockNumber": "27956",
+      "trackingId": "0x997dc9c48380d19a8d0f583452286557dd72f0ad084ad7dda1e70f0312039449",
+      "receivedRouteId": "0xabd43f6ea8d17dc4902f7c700aa26da484cd4f8f2100aa8259b8a554dfb3c96f",
+      "quantity": "600000"
+    },
+    {
+      "operationId": "512aa941-4d7f-4bed-bbf0-48fc78a220d0",
+      "status": "CONFIRMED",
+      "transactionHash": "0xe8ea17c0f207f6b6750f0091db192c8c4dcc95284458998531dcb1d2728073a3",
+      "blockNumber": "27959",
+      "trackingId": "0x997dc9c48380d19a8d0f583452286557dd72f0ad084ad7dda1e70f0312039449",
+      "receivedRouteId": "0x5808dda9b31f31a7fd47bbb0f40583238969931d1b93db48841cc2b0e4416d04",
+      "quantity": "400000"
+    },
+    {
+      "operationId": "37729f93-25cf-4686-a7e2-2bae9f6461aa",
+      "status": "CONFIRMED",
+      "transactionHash": "0xc26199c54385435ca030e4d5cd83312049cf2fa9ac4ee31810435f25fb9cbf24",
+      "blockNumber": "27962",
+      "trackingId": "0x997dc9c48380d19a8d0f583452286557dd72f0ad084ad7dda1e70f0312039449",
+      "receivedRouteId": "0x5d9530d7d2af86dc0c4aa886cf9ae93b9701d1bc43bc232eae49f0da5786691e",
+      "quantity": "250000"
+    },
+    {
+      "operationId": "0f7018ea-c4bb-4d78-a1c9-e17cf47399a4",
+      "status": "CONFIRMED",
+      "transactionHash": "0xce7a991924b42e8084a313935306c5e876bd53d358b64d5cc9cd10843880b92d",
+      "blockNumber": "27965",
+      "trackingId": "0x997dc9c48380d19a8d0f583452286557dd72f0ad084ad7dda1e70f0312039449",
+      "receivedRouteId": "0xb1a03597951a5aeca904529ff341614043618642ef726c328855ab268eea88a9",
+      "quantity": "150000"
+    },
+    {
+      "operationId": "f5440290-95b4-47ab-a797-1c206ed71738",
+      "status": "CONFIRMED",
+      "transactionHash": "0xd4c0cbea0bfddb4e6f872b2b3838f5feede0c1171c50eb50b7c4fda17d521be8",
+      "blockNumber": "27968",
+      "trackingId": "0x997dc9c48380d19a8d0f583452286557dd72f0ad084ad7dda1e70f0312039449",
+      "receivedRouteId": "0xe45347f7eaf820c6d2c248648bdae2205a4f91f54f35e47f000b452346012459",
+      "quantity": "50000"
+    },
+    {
+      "operationId": "802f6bf0-0125-4292-b50d-71ecbe0d77e4",
+      "status": "CONFIRMED",
+      "transactionHash": "0xf2efbad99fdae00294a86b8cb36ea9db4d5020fe52ec34676453aceaf9326cda",
+      "blockNumber": "27971",
+      "trackingId": "0x997dc9c48380d19a8d0f583452286557dd72f0ad084ad7dda1e70f0312039449",
+      "receivedRouteId": "0x5aa91a63dd53d46acd5151549a13e4681cb6972af7593fb9303bd9400a752a76",
+      "quantity": "100000"
+    },
+    {
+      "operationId": "3a8e9a78-4308-482e-a7c7-5cab5369bc9e",
+      "status": "CONFIRMED",
+      "transactionHash": "0x7300c5b5c6f5c0304d8027c0e948135e3fd4d8e7085a6c2fac77b49eaaa25c69",
+      "blockNumber": "27974",
+      "trackingId": "0x997dc9c48380d19a8d0f583452286557dd72f0ad084ad7dda1e70f0312039449",
+      "removedQuantity": "100000",
+      "reason": "Sold",
+      "reasonText": ""
+    },
+    {
+      "operationId": "d5783064-6b52-448e-855c-a01d8e73f15f",
+      "status": "CONFIRMED",
+      "transactionHash": "0x7d3d2e679505c9c5c44cd2879ab2e60a1172a6cdeb9b1f8ff952176d99a9ec67",
+      "blockNumber": "27977",
+      "trackingId": "0x997dc9c48380d19a8d0f583452286557dd72f0ad084ad7dda1e70f0312039449",
+      "removedQuantity": "200",
+      "reason": "Lost",
+      "reasonText": "পরিবহনের সময় হারিয়েছে"
+    },
+    {
+      "operationId": "85864b18-1a8d-41ad-b3ed-2cf3b52864f3",
+      "status": "CONFIRMED",
+      "transactionHash": "0x196b0f0bfb9193b575ff141580e41c8c201025b1e54eb50b73ac2325e542bd27",
+      "blockNumber": "27980",
+      "trackingId": "0x997dc9c48380d19a8d0f583452286557dd72f0ad084ad7dda1e70f0312039449",
+      "removedQuantity": "500",
+      "reason": "Spoiled",
+      "reasonText": "Packaging damaged during storage"
+    },
+    {
+      "operationId": "afe28c6f-4fc6-4d42-aff0-e5069466fd49",
+      "status": "CONFIRMED",
+      "transactionHash": "0xe6b8f7526f25db835ac8b5376e241ee55500091bb5e6c0a85b6a892fe50c96ac",
+      "blockNumber": "27983",
+      "trackingId": "0x8835b660cf9cb33de1e7533e596aeb5cfde74f8aaa6cf965347ee7f52043db04",
+      "shortCode": "3ybb67s6v1qe"
+    },
+    {
+      "operationId": "226411f0-c504-4867-b486-aa043d1896d7",
+      "status": "CONFIRMED",
+      "transactionHash": "0x0977439e7dfd3cc6c86e3fa4e48cabee585264f10935a95e52efd9f7dbbe8f8a",
+      "blockNumber": "27986",
+      "trackingId": "0x7c3de209da73eb0f6b8cc52cbfd420dce3a309e5b162492e3d25eee5a866c9c7",
+      "shortCode": "0jx8h77sec5n"
+    },
+    {
+      "operationId": "64527760-4362-442a-bdf0-36ea2eb14fcc",
+      "status": "CONFIRMED",
+      "transactionHash": "0x1f5e430f1771d4860d8f44f76334ecefb70cd7402bc4b8f3dc34b0a92b654178",
+      "blockNumber": "27989",
+      "trackingId": "0xd9dad8738bd89421ddf30444b1979e231211f5043e7c2e9937c372b9fb900c8a",
+      "shortCode": "d2r9mqhghemt"
+    },
+    {
+      "operationId": "62a19f5b-be69-406b-956b-b69d363494c2",
+      "status": "CONFIRMED",
+      "transactionHash": "0x182a9f0789cafe7dba5b2bcd2e25ed8da1afaa58e22a3500221edab1fc5a7603",
+      "blockNumber": "27992",
+      "trackingId": "0xd9dad8738bd89421ddf30444b1979e231211f5043e7c2e9937c372b9fb900c8a"
+    },
+    {
+      "operationId": "dc18b0ab-1b83-44bc-bd06-c1e4645cbd8d",
+      "status": "CONFIRMED",
+      "transactionHash": "0x1eb6aa84f559729cf1b086615f44510819c442c769183ed523a3016e3b23967b",
+      "blockNumber": "27995",
+      "trackingId": "0xd9dad8738bd89421ddf30444b1979e231211f5043e7c2e9937c372b9fb900c8a"
+    },
+    {
+      "operationId": "65964488-7dd1-4328-a109-c25cfc814d0a",
+      "status": "CONFIRMED",
+      "transactionHash": "0x1d0aac370cd8a324b1cd7b53a90de1ca337a4a5d00d7148986d1889bd74037d6",
+      "blockNumber": "27998",
+      "trackingId": "0xd9dad8738bd89421ddf30444b1979e231211f5043e7c2e9937c372b9fb900c8a",
+      "removedQuantity": "1",
+      "reason": "Damaged",
+      "reasonText": "Broken glass during handling"
+    },
+    {
+      "operationId": "c80ce07a-e33f-4ac2-9b18-1a9f96cc5234",
+      "status": "CONFIRMED",
+      "transactionHash": "0x85f497a9b4f07bd1fdcef496b1ce2acce0f35d504a50969e3c9fb6c728abda4f",
+      "blockNumber": "28001",
+      "trackingId": "0x577d48c08b2df2e9187da72c50776804653fb9ca7e6aaf5b6610f6cc9826af2b",
+      "shortCode": "32sa43bwkqqk"
+    },
+    {
+      "operationId": "1ca312f9-b9bd-4a8b-a399-5c30fb168006",
+      "status": "CONFIRMED",
+      "transactionHash": "0x72432e02ba34c20c5903235bc65462d1ed2d0b61661a654e11923f8dab73a5b1",
+      "blockNumber": "28004",
+      "trackingId": "0x577d48c08b2df2e9187da72c50776804653fb9ca7e6aaf5b6610f6cc9826af2b",
+      "receivedRouteId": "0x7da01c71a6b224cc1fc8f8954b88b854ecdb98f33ca7a36ffe30545f7bd0dc08",
+      "quantity": "6"
+    },
+    {
+      "operationId": "398175f6-6ab5-485d-a939-6d3ea8ba504b",
+      "status": "CONFIRMED",
+      "transactionHash": "0x84418f2fdd746395fdf791d45691b4a1e162dd62d7299a72433965f893e1177a",
+      "blockNumber": "28007",
+      "trackingId": "0x577d48c08b2df2e9187da72c50776804653fb9ca7e6aaf5b6610f6cc9826af2b",
+      "receivedRouteId": "0x0a3595a1909a2e26f8727616f0c4a4d433de498fd6df0fb98658c7bec9d9545c",
+      "quantity": "4"
+    },
+    {
+      "operationId": "392b46c0-6966-4821-86f6-178cc6a98f84",
+      "status": "CONFIRMED",
+      "transactionHash": "0xf56965625a601f597eb1d84c799b8863c5395dcbfb37c0b091ae7174229c67d1",
+      "blockNumber": "28010",
+      "trackingId": "0x577d48c08b2df2e9187da72c50776804653fb9ca7e6aaf5b6610f6cc9826af2b",
+      "removedQuantity": "6",
+      "reason": "Sold",
+      "reasonText": ""
+    },
+    {
+      "operationId": "28a40d5c-b453-4692-8391-b9b08763c1df",
+      "status": "CONFIRMED",
+      "transactionHash": "0xb13dcae89eb402eb99b316001b121e20eb25ee79f58ed62aeb3443b8ae926d36",
+      "blockNumber": "28013",
+      "trackingId": "0x577d48c08b2df2e9187da72c50776804653fb9ca7e6aaf5b6610f6cc9826af2b",
+      "removedQuantity": "3",
+      "reason": "Lost",
+      "reasonText": "Three items lost during handling"
+    },
+    {
+      "operationId": "50ddfece-eacb-498c-a51b-7e08dac20676",
+      "status": "CONFIRMED",
+      "transactionHash": "0xb6beb1e4578f5fb06cdfd2d5714726573364db0dc89afb75c896b6e0beb4c824",
+      "blockNumber": "28016",
+      "trackingId": "0x577d48c08b2df2e9187da72c50776804653fb9ca7e6aaf5b6610f6cc9826af2b",
+      "removedQuantity": "1",
+      "reason": "Disposed",
+      "reasonText": "Final item withdrawn by shop"
+    },
+    {
+      "operationId": "2c6f38c2-a1b4-4eff-bf26-3450e3d4a702",
+      "status": "CONFIRMED",
+      "transactionHash": "0x93009f97124a67b6d78ec4c7af5ae50e9dc4d7d9f7dba1969e7e207d1627c286",
+      "blockNumber": "28019",
+      "trackingId": "0x5add60e24adf044d48a3bb473e17b8f205ec45bb4b08ce03c5a3f21f69885a3b",
+      "shortCode": "jm28wfwsz4e7"
+    }
+  ],
+  "confirmedTransactions": 31,
+  "claimableProduct": "0x7c3de209da73eb0f6b8cc52cbfd420dce3a309e5b162492e3d25eee5a866c9c7",
+  "batchProduct": "0x997dc9c48380d19a8d0f583452286557dd72f0ad084ad7dda1e70f0312039449"
+}
