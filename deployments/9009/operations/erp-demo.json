@@ -1,0 +1,408 @@
+{
+  "schemaVersion": 1,
+  "passed": true,
+  "verifiedAt": "2026-10-07T01:47:43.164Z",
+  "contract": {
+    "address": "0xf286a8f7bbbe4e5f2337e1701524368794de5672",
+    "runtimeBytecodeHash": "0x8b81a848236820215ceca237aa5cd419b858733688db3814e077199087c9b0e8"
+  },
+  "network": {
+    "chainId": 9009
+  },
+  "checks": {
+    "queuedBulkCreate": true,
+    "queuedBulkReceipt": true,
+    "queuedCheckout": true,
+    "existingQrCodes": true,
+    "noReceivingMembership": true,
+    "duplicateCheckoutPrevented": true,
+    "crossBusinessJobHidden": true,
+    "routeConservation": true,
+    "onChainReceiptsVerified": true,
+    "erpEvidenceHashBound": true,
+    "serializedTransactionsCleared": true
+  },
+  "businesses": [
+    {
+      "name": "TraceForge Demo Producer",
+      "organizationId": "0xad01ace8768ef70034ba3be415c26c64d3c64ebd61a3861d7537c5aa96deb19b"
+    },
+    {
+      "name": "TraceForge Demo Shop",
+      "organizationId": "0x556a0f7ef26b80fdae70b0159e24c8c9005517d4315b51c1aec4fe4803f9349f"
+    }
+  ],
+  "jobs": [
+    {
+      "jobId": "e36f0955-b344-4027-aa45-fa515efb45af",
+      "status": "COMPLETED",
+      "reference": "ERP-REGISTRATION-20261007",
+      "occurredAt": "2026-10-07T01:46:47.438Z",
+      "createdAt": "2026-10-07T01:46:48.000Z",
+      "counts": {
+        "total": 3,
+        "confirmed": 3,
+        "failed": 0,
+        "cancelled": 0,
+        "pending": 0
+      },
+      "items": [
+        {
+          "position": 1,
+          "operationId": "89446b3d-29d1-472b-89a7-0218fda806c3",
+          "action": "create",
+          "status": "CONFIRMED",
+          "attempts": 1,
+          "error": null,
+          "result": {
+            "operationId": "b9ff42d1-5b8d-4481-a2e2-30a18b7cb0a0",
+            "status": "CONFIRMED",
+            "transactionHash": "0x8c3fdf43f924aa394271211b52d2eb8cd5070fe05f6f99849916360d91674d09",
+            "blockNumber": "59856",
+            "trackingId": "0x49bb14002ce95538a2e0c45b481130a0e9b366467bb0fa578bb2775683541b1e",
+            "shortCode": "pfv4c5dgvjxr"
+          }
+        },
+        {
+          "position": 2,
+          "operationId": "ed604082-56f4-409a-97fd-8af131d5bc9b",
+          "action": "create",
+          "status": "CONFIRMED",
+          "attempts": 1,
+          "error": null,
+          "result": {
+            "operationId": "eea527d5-4971-48b4-aee8-499f5260c3e9",
+            "status": "CONFIRMED",
+            "transactionHash": "0xe699eac193dbee07fdd35358edd89054c9cc2639af89c7b96a6dcb73df65aa4c",
+            "blockNumber": "59859",
+            "trackingId": "0xef7ac933151f2991f811c86432c027235158d9798c76c10d6eaed09c721f58c9",
+            "shortCode": "b47mjcjqnq85"
+          }
+        },
+        {
+          "position": 3,
+          "operationId": "a325a2ee-cf19-4214-a9b2-df2b773b6f15",
+          "action": "create",
+          "status": "CONFIRMED",
+          "attempts": 1,
+          "error": null,
+          "result": {
+            "operationId": "731d173d-4496-49a1-8e39-cf09b721ec72",
+            "status": "CONFIRMED",
+            "transactionHash": "0xf6b927521960e7d87d6ad12d44cefd961b33449ec58bf49175b9350127558b98",
+            "blockNumber": "59861",
+            "trackingId": "0x999e0803a66acaadc5c412c5d380df8a57a38451cb344a1ca337684afa695c08",
+            "shortCode": "msxjg3x9jkye"
+          }
+        }
+      ]
+    },
+    {
+      "jobId": "d6aadd15-ea30-4c73-8c88-db4b164fd809",
+      "status": "COMPLETED",
+      "reference": "ERP-RECEIPT-20261007",
+      "occurredAt": "2026-10-07T01:46:47.438Z",
+      "createdAt": "2026-10-07T01:47:07.000Z",
+      "counts": {
+        "total": 3,
+        "confirmed": 3,
+        "failed": 0,
+        "cancelled": 0,
+        "pending": 0
+      },
+      "items": [
+        {
+          "position": 1,
+          "operationId": "5807181f-4749-404a-8d29-9022d53d6b25",
+          "action": "receive",
+          "status": "CONFIRMED",
+          "attempts": 1,
+          "error": null,
+          "result": {
+            "operationId": "9249ca6a-13b7-4ad1-9606-77e29ff71f8a",
+            "status": "CONFIRMED",
+            "transactionHash": "0x12d68d31c0e3def3c0e8de61bf273bf23689b7202e336f6426b4b910cc9ea3f5",
+            "blockNumber": "59866",
+            "trackingId": "0x49bb14002ce95538a2e0c45b481130a0e9b366467bb0fa578bb2775683541b1e",
+            "receivedRouteId": "0xc1de5af97f722ea6527e31f0cde3ea491b6c19559ad1471d8ca9936b4e409fdf",
+            "quantity": "20"
+          }
+        },
+        {
+          "position": 2,
+          "operationId": "20d9dd53-fcf5-46ef-9f45-bdf46cbc28ec",
+          "action": "receive",
+          "status": "CONFIRMED",
+          "attempts": 1,
+          "error": null,
+          "result": {
+            "operationId": "8b8a9122-e7b2-42d5-8db6-c68733f57429",
+            "status": "CONFIRMED",
+            "transactionHash": "0x19d5d28fd9311248a0d793de443fbc47d5061636b38c5f494ffa31297b85c99b",
+            "blockNumber": "59868",
+            "trackingId": "0xef7ac933151f2991f811c86432c027235158d9798c76c10d6eaed09c721f58c9",
+            "receivedRouteId": "0xbf342d7a6ae23232fa3dae8ead722f6eb68e5840edf65199fb4a300319b8f577",
+            "quantity": "10"
+          }
+        },
+        {
+          "position": 3,
+          "operationId": "bbdf9607-168b-4d3a-b8e0-6fff11bd8737",
+          "action": "receive",
+          "status": "CONFIRMED",
+          "attempts": 1,
+          "error": null,
+          "result": {
+            "operationId": "0c0b7a13-aadd-4757-9401-98a123e2b76c",
+            "status": "CONFIRMED",
+            "transactionHash": "0xf2570788bc0d4566c811db395da01767c1f46fcc4bf589846a1e46401871b60f",
+            "blockNumber": "59871",
+            "trackingId": "0x999e0803a66acaadc5c412c5d380df8a57a38451cb344a1ca337684afa695c08"
+          }
+        }
+      ]
+    },
+    {
+      "jobId": "bee76b22-cbb2-4e18-9007-c6cca6e4ceaf",
+      "status": "COMPLETED",
+      "reference": "ERP-SALE-20261007",
+      "occurredAt": "2026-10-07T01:46:47.438Z",
+      "createdAt": "2026-10-07T01:47:24.000Z",
+      "counts": {
+        "total": 3,
+        "confirmed": 3,
+        "failed": 0,
+        "cancelled": 0,
+        "pending": 0
+      },
+      "items": [
+        {
+          "position": 1,
+          "operationId": "6d5863c0-9300-49bd-b38a-5eda426d1566",
+          "action": "remove",
+          "status": "CONFIRMED",
+          "attempts": 1,
+          "error": null,
+          "result": {
+            "operationId": "65e48808-89ae-42c6-8773-534ed915725c",
+            "status": "CONFIRMED",
+            "transactionHash": "0xd05b849228f692b30c173fb1f349c9525a1ccb3ad5a4bfb88c79fa7ff527d293",
+            "blockNumber": "59874",
+            "trackingId": "0x49bb14002ce95538a2e0c45b481130a0e9b366467bb0fa578bb2775683541b1e",
+            "removedQuantity": "2",
+            "reason": "Sold",
+            "reasonText": ""
+          }
+        },
+        {
+          "position": 2,
+          "operationId": "b115197c-5daa-4389-b9b6-83ebd05c2efe",
+          "action": "remove",
+          "status": "CONFIRMED",
+          "attempts": 1,
+          "error": null,
+          "result": {
+            "operationId": "9fa587fa-28f4-4845-ba31-e8e531c64371",
+            "status": "CONFIRMED",
+            "transactionHash": "0xebd65a7d0e6813f29af8fbbeb6e1347b1d8b2bf652eadd4e86b9575defa853f0",
+            "blockNumber": "59877",
+            "trackingId": "0xef7ac933151f2991f811c86432c027235158d9798c76c10d6eaed09c721f58c9",
+            "removedQuantity": "3",
+            "reason": "Sold",
+            "reasonText": ""
+          }
+        },
+        {
+          "position": 3,
+          "operationId": "a3112d81-a698-4b6d-8df7-115b131ad1a3",
+          "action": "remove",
+          "status": "CONFIRMED",
+          "attempts": 1,
+          "error": null,
+          "result": {
+            "operationId": "629bb164-19fe-4469-81ea-a327fafae3a5",
+            "status": "CONFIRMED",
+            "transactionHash": "0x0746d6704fbfee4670c2ede212071d6cf53e07ab5f95eaf1d85fd1afffe565de",
+            "blockNumber": "59880",
+            "trackingId": "0x999e0803a66acaadc5c412c5d380df8a57a38451cb344a1ca337684afa695c08",
+            "removedQuantity": "1",
+            "reason": "Sold",
+            "reasonText": ""
+          }
+        }
+      ]
+    }
+  ],
+  "products": [
+    {
+      "trackingId": "0x49bb14002ce95538a2e0c45b481130a0e9b366467bb0fa578bb2775683541b1e",
+      "name": "ERP demo Cola batch",
+      "externalId": "A / ERP-20261007-COLA",
+      "shortCode": "pfv4c5dgvjxr",
+      "initialQuantity": "100",
+      "availableQuantity": "98",
+      "removedQuantity": "2",
+      "isBatch": true,
+      "closed": false,
+      "rootRouteId": "0xb8e1912e6cad31debee713d9f35872cb08f18f0f71a17e9bed5d7604a9948992",
+      "registrationMetadataHash": "0x2574664c768b17aa894285f9289550ed7def10c729284c5b37794052b7a4842c",
+      "routes": 2,
+      "removals": 1,
+      "owned": {
+        "0xad01ace8768ef70034ba3be415c26c64d3c64ebd61a3861d7537c5aa96deb19b": "80",
+        "0x556a0f7ef26b80fdae70b0159e24c8c9005517d4315b51c1aec4fe4803f9349f": "18"
+      },
+      "reasons": {
+        "Sold": "2",
+        "Lost": "0",
+        "Damaged": "0",
+        "Spoiled": "0",
+        "Disposed": "0",
+        "Other": "0"
+      },
+      "tenantId": "0x1f882e77f75c8c6e61071a900076d73f717d933125260a6cba25263f7bc371f6",
+      "publish": true,
+      "shopAvailable": "18"
+    },
+    {
+      "trackingId": "0xef7ac933151f2991f811c86432c027235158d9798c76c10d6eaed09c721f58c9",
+      "name": "ERP demo Soap batch",
+      "externalId": "A / ERP-20261007-SOAP",
+      "shortCode": "b47mjcjqnq85",
+      "initialQuantity": "50",
+      "availableQuantity": "47",
+      "removedQuantity": "3",
+      "isBatch": true,
+      "closed": false,
+      "rootRouteId": "0x28891723ff6c0128d4747a0ac4a0cd0ebf2baaf9e023eeae4e0fae88bcfc97ff",
+      "registrationMetadataHash": "0xb9f13c16b88f315ee6721952f4f4b2c2b8ea5e6228a1ab30ee041a1bcdd99c52",
+      "routes": 2,
+      "removals": 1,
+      "owned": {
+        "0xad01ace8768ef70034ba3be415c26c64d3c64ebd61a3861d7537c5aa96deb19b": "40",
+        "0x556a0f7ef26b80fdae70b0159e24c8c9005517d4315b51c1aec4fe4803f9349f": "7"
+      },
+      "reasons": {
+        "Sold": "3",
+        "Lost": "0",
+        "Damaged": "0",
+        "Spoiled": "0",
+        "Disposed": "0",
+        "Other": "0"
+      },
+      "tenantId": "0x1f882e77f75c8c6e61071a900076d73f717d933125260a6cba25263f7bc371f6",
+      "publish": true,
+      "shopAvailable": "7"
+    },
+    {
+      "trackingId": "0x999e0803a66acaadc5c412c5d380df8a57a38451cb344a1ca337684afa695c08",
+      "name": "ERP demo Bottle",
+      "externalId": "A / ERP-20261007-BOTTLE",
+      "shortCode": "msxjg3x9jkye",
+      "initialQuantity": "1",
+      "availableQuantity": "0",
+      "removedQuantity": "1",
+      "isBatch": false,
+      "closed": true,
+      "rootRouteId": "0x0000000000000000000000000000000000000000000000000000000000000000",
+      "registrationMetadataHash": "0xc7e8bc1ab1130fbcc3ae74b9cbfa58fa52f62f5ed5563c0627da5d8fe9dbc737",
+      "routes": 0,
+      "removals": 1,
+      "owned": {},
+      "reasons": {
+        "Sold": "1",
+        "Lost": "0",
+        "Damaged": "0",
+        "Spoiled": "0",
+        "Disposed": "0",
+        "Other": "0"
+      },
+      "tenantId": "0x1f882e77f75c8c6e61071a900076d73f717d933125260a6cba25263f7bc371f6",
+      "publish": true,
+      "shopAvailable": "0"
+    }
+  ],
+  "transactions": [
+    {
+      "operationId": "b9ff42d1-5b8d-4481-a2e2-30a18b7cb0a0",
+      "status": "CONFIRMED",
+      "transactionHash": "0x8c3fdf43f924aa394271211b52d2eb8cd5070fe05f6f99849916360d91674d09",
+      "blockNumber": "59856",
+      "trackingId": "0x49bb14002ce95538a2e0c45b481130a0e9b366467bb0fa578bb2775683541b1e",
+      "shortCode": "pfv4c5dgvjxr"
+    },
+    {
+      "operationId": "eea527d5-4971-48b4-aee8-499f5260c3e9",
+      "status": "CONFIRMED",
+      "transactionHash": "0xe699eac193dbee07fdd35358edd89054c9cc2639af89c7b96a6dcb73df65aa4c",
+      "blockNumber": "59859",
+      "trackingId": "0xef7ac933151f2991f811c86432c027235158d9798c76c10d6eaed09c721f58c9",
+      "shortCode": "b47mjcjqnq85"
+    },
+    {
+      "operationId": "731d173d-4496-49a1-8e39-cf09b721ec72",
+      "status": "CONFIRMED",
+      "transactionHash": "0xf6b927521960e7d87d6ad12d44cefd961b33449ec58bf49175b9350127558b98",
+      "blockNumber": "59861",
+      "trackingId": "0x999e0803a66acaadc5c412c5d380df8a57a38451cb344a1ca337684afa695c08",
+      "shortCode": "msxjg3x9jkye"
+    },
+    {
+      "operationId": "9249ca6a-13b7-4ad1-9606-77e29ff71f8a",
+      "status": "CONFIRMED",
+      "transactionHash": "0x12d68d31c0e3def3c0e8de61bf273bf23689b7202e336f6426b4b910cc9ea3f5",
+      "blockNumber": "59866",
+      "trackingId": "0x49bb14002ce95538a2e0c45b481130a0e9b366467bb0fa578bb2775683541b1e",
+      "receivedRouteId": "0xc1de5af97f722ea6527e31f0cde3ea491b6c19559ad1471d8ca9936b4e409fdf",
+      "quantity": "20"
+    },
+    {
+      "operationId": "8b8a9122-e7b2-42d5-8db6-c68733f57429",
+      "status": "CONFIRMED",
+      "transactionHash": "0x19d5d28fd9311248a0d793de443fbc47d5061636b38c5f494ffa31297b85c99b",
+      "blockNumber": "59868",
+      "trackingId": "0xef7ac933151f2991f811c86432c027235158d9798c76c10d6eaed09c721f58c9",
+      "receivedRouteId": "0xbf342d7a6ae23232fa3dae8ead722f6eb68e5840edf65199fb4a300319b8f577",
+      "quantity": "10"
+    },
+    {
+      "operationId": "0c0b7a13-aadd-4757-9401-98a123e2b76c",
+      "status": "CONFIRMED",
+      "transactionHash": "0xf2570788bc0d4566c811db395da01767c1f46fcc4bf589846a1e46401871b60f",
+      "blockNumber": "59871",
+      "trackingId": "0x999e0803a66acaadc5c412c5d380df8a57a38451cb344a1ca337684afa695c08"
+    },
+    {
+      "operationId": "65e48808-89ae-42c6-8773-534ed915725c",
+      "status": "CONFIRMED",
+      "transactionHash": "0xd05b849228f692b30c173fb1f349c9525a1ccb3ad5a4bfb88c79fa7ff527d293",
+      "blockNumber": "59874",
+      "trackingId": "0x49bb14002ce95538a2e0c45b481130a0e9b366467bb0fa578bb2775683541b1e",
+      "removedQuantity": "2",
+      "reason": "Sold",
+      "reasonText": ""
+    },
+    {
+      "operationId": "9fa587fa-28f4-4845-ba31-e8e531c64371",
+      "status": "CONFIRMED",
+      "transactionHash": "0xebd65a7d0e6813f29af8fbbeb6e1347b1d8b2bf652eadd4e86b9575defa853f0",
+      "blockNumber": "59877",
+      "trackingId": "0xef7ac933151f2991f811c86432c027235158d9798c76c10d6eaed09c721f58c9",
+      "removedQuantity": "3",
+      "reason": "Sold",
+      "reasonText": ""
+    },
+    {
+      "operationId": "629bb164-19fe-4469-81ea-a327fafae3a5",
+      "status": "CONFIRMED",
+      "transactionHash": "0x0746d6704fbfee4670c2ede212071d6cf53e07ab5f95eaf1d85fd1afffe565de",
+      "blockNumber": "59880",
+      "trackingId": "0x999e0803a66acaadc5c412c5d380df8a57a38451cb344a1ca337684afa695c08",
+      "removedQuantity": "1",
+      "reason": "Sold",
+      "reasonText": ""
+    }
+  ],
+  "erpConfirmedTransactions": 9,
+  "totalConfirmedTransactions": 40
+}
