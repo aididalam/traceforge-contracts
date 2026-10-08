@@ -102,3 +102,11 @@ The [live operation receipt](deployments/9009/operations/batch-demo.json) record
 31 confirmed business operations, including setup, million-item partial receipts,
 returns, bulk removals and single-item regressions. Retired receipts remain in
 Git history; the old contract remains historical ledger data.
+
+## Docker deployment
+
+The parent repository provides Docker Compose configuration, private persistent
+storage, runtime domain settings and backup/recovery commands. See the
+[Docker deployment guide](https://github.com/aididalam/traceforge/blob/main/docs/docker-deployment.md).
+The contract-tools image is used only for explicit first-chain bootstrap.
+Normal application startup reuses the configured deployed contract.
