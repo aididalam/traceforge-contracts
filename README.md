@@ -2,9 +2,14 @@
 
 Part of [TraceForge](https://github.com/aididalam/traceforge). See the parent repository for setup and deployment.
 
-Defines the Solidity rules for business registration, product receipt and ownership.
+Defines business registration, owner-approved product receipts and ownership.
 Records product metadata hashes, batch routes, quantities and removal reasons.
-Events provide the permanent history consumed by the indexer and API.
+Only the source holder signs `approveReceipt`; receiver identity, quantity, expiry,
+version and replay guards prevent unsolicited stock transfers. `ReceiptApproved`
+records both wallets alongside the movement events consumed by the indexer.
+
+Run `npm ci && npm test` for authorization, quantity, replay and lifecycle tests.
+This contract replaces the v0.2 receipt interface and requires a new deployment.
 
 ## License
 

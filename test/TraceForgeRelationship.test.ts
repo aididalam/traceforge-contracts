@@ -5,6 +5,7 @@ import { network } from "hardhat";
 import {
   keccak256,
   stringToHex,
+  zeroHash,
 } from "viem";
 
 function id(value: string) {
@@ -705,6 +706,7 @@ describe("TraceForge entity relationships", () => {
       adminContract,
       organizationAContract,
       organizationBContract,
+      organizationBWallet,
       tenantId,
       organizationBId,
       roleId,
@@ -727,9 +729,9 @@ describe("TraceForge entity relationships", () => {
       ]),
     );
 
-    await wait(await organizationBContract.write.claimCustody([
-      tenantId, sourceEntityId, 0n, id("RECEIVED"), id("RECEIPT_EVIDENCE")
-    ]));
+    await wait(await organizationAContract.write.approveReceipt([{tenantId,entityId:sourceEntityId,sourceRouteId:zeroHash,receivedRouteId:zeroHash,
+      requestId:id("RELATIONSHIP_RECEIPT"),receiverWallet:organizationBWallet.account.address,expectedVersion:0n,
+      quantity:1n,expiresAt:4000000000n,evidenceHash:id("RECEIPT_EVIDENCE")} ]));
 
     const entity =
       await traceForge.read.getEntity([

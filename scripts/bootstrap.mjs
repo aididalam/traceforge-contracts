@@ -7,14 +7,14 @@ if(process.env.TRACEFORGE_NETWORK_KIND==='public') {
  try { console.log(JSON.stringify(await publicBootstrap())); }
  catch(error) { console.error(error.code||'Public deployment failed; check RPC, funding and fee limits.');process.exitCode=1; }
 } else {
-const directory='/data',recordFile=directory+'/contract-deployment.json',attemptFile=directory+'/contract-attempt.json';
-const artifact=JSON.parse(await readFile('/app/contract.json','utf8'));
+const directory=process.env.TRACEFORGE_BOOTSTRAP_DATA_DIR||'/data',recordFile=directory+'/contract-deployment.json',attemptFile=directory+'/contract-attempt.json';
+const artifact=JSON.parse(await readFile(process.env.TRACEFORGE_BOOTSTRAP_ARTIFACT||'/app/contract.json','utf8'));
 const chainId=Number(process.env.TRACEFORGE_CHAIN_ID);
 const chain=defineChain({id:chainId,name:'TraceForge',nativeCurrency:{name:'Ether',symbol:'ETH',decimals:18},rpcUrls:{default:{http:[process.env.TRACEFORGE_RPC_URL]}}});
 const client=createPublicClient({chain,transport:http(process.env.TRACEFORGE_RPC_URL)});
 if(await client.getChainId()!==chainId)throw Error('Bootstrap chain mismatch');
 const genesis=(await client.getBlock({blockNumber:0n})).hash;
-try{const record=JSON.parse(await readFile(recordFile,'utf8'));if(record.genesisHash!==genesis||record.runtimeHash!==keccak256(await client.getBytecode({address:record.address})))throw Error('Existing deployment mismatch');console.log(JSON.stringify(record));process.exit(0);}catch(error){if(error.code!=='ENOENT')throw error;}
+try{const record=JSON.parse(await readFile(recordFile,'utf8'));if(record.genesisHash!==genesis||record.runtimeHash!==keccak256(await client.getBytecode({address:record.address}))||record.runtimeHash!==keccak256(artifact.deployedBytecode))throw Error('Existing deployment belongs to different contract code. Keep it intact and use a new deployment data directory.');console.log(JSON.stringify(record));process.exit(0);}catch(error){if(error.code!=='ENOENT')throw error;}
 const keyFile=directory+'/secrets/deployer.key';
 try{await stat(keyFile);}catch(error){if(error.code!=='ENOENT')throw error;await writeFile(keyFile,generatePrivateKey()+'\n',{mode:0o600,flag:'wx'});}
 const account=privateKeyToAccount((await readFile(keyFile,'utf8')).trim());

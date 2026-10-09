@@ -7,7 +7,8 @@
     "test": "hardhat test",
     "compile": "hardhat compile",
     "clean": "hardhat clean",
-    "test:public": "node --check scripts/bootstrap.mjs && node --test scripts/test-public-bootstrap.mjs"
+    "test:public": "node --check scripts/bootstrap.mjs && node --test scripts/test-public-bootstrap.mjs",
+    "test:bootstrap": "node --test scripts/test-private-bootstrap.mjs"
   },
   "keywords": [],
   "author": "",

@@ -470,13 +470,9 @@ describe("TraceForge closed entity lifecycle", () => {
     });
 
     await assert.rejects(async () => {
-      await organizationAContract.write.claimCustody([
-        tenantId,
-        entityId,
-        0n,
-        id("CUSTODY_OFFERED"),
-        id("CUSTODY_EVIDENCE"),
-      ]);
+      await organizationAContract.write.approveReceipt([{tenantId,entityId,sourceRouteId:zeroHash,receivedRouteId:zeroHash,
+        requestId:id("CLOSED_REQUEST"),receiverWallet:"0x1111111111111111111111111111111111111111",expectedVersion:0n,
+        quantity:1n,expiresAt:4000000000n,evidenceHash:id("CUSTODY_EVIDENCE")}]);
     });
 
     await assert.rejects(async () => {

@@ -28,9 +28,26 @@ async function scenario(quantity = 1_000_000n) {
   const product = () => contract.read.getProduct([tenant, entity]);
   const route = (routeId: Hex) => contract.read.getBatchRoute([tenant, entity, routeId]);
   const root = (await product()).rootRouteId;
+  let requestNumber=0;
+  const receiverWallet=(client:typeof producer)=>wallets[[producer,a,b,shop,outsider].indexOf(client)+1].account.address;
+  const approveBatch=async(client:typeof producer,args:readonly [Hex,Hex,Hex,Hex,bigint,bigint,Hex])=>{
+    let sourceOrganization=organizations[0];
+    try{sourceOrganization=quantity===1n?(await contract.read.getEntity([args[0],args[1]])).currentCustodian:(await contract.read.getBatchRoute([args[0],args[1],args[2]])).organizationId;}catch{}
+    const sender=clients[organizations.indexOf(sourceOrganization)]??producer;
+    return sender.write.approveReceipt([{tenantId:args[0],entityId:args[1],sourceRouteId:args[2],receivedRouteId:args[3],
+      requestId:id('QUANTITY_REQUEST_'+(++requestNumber)),receiverWallet:receiverWallet(client),expectedVersion:args[4],quantity:args[5],
+      expiresAt:(await publicClient.getBlock()).timestamp+3600n,evidenceHash:args[6]}]);
+  };
+  const approveSingle=async(client:typeof producer,version=0n,evidence=id('EVIDENCE'))=>{
+    const holder=(await contract.read.getEntity([tenant,entity])).currentCustodian;
+    const sender=clients[organizations.indexOf(holder)]??producer;
+    return sender.write.approveReceipt([{tenantId:tenant,entityId:entity,sourceRouteId:zeroHash,receivedRouteId:zeroHash,
+      requestId:id('QUANTITY_REQUEST_'+(++requestNumber)),receiverWallet:receiverWallet(client),expectedVersion:version,quantity:1n,
+      expiresAt:(await publicClient.getBlock()).timestamp+3600n,evidenceHash:evidence}]);
+  };
   const claim = async (client: typeof producer, source: Hex, name: string, count: bigint, version?: bigint) => {
     const routeId = id(name);
-    const receipt = await wait(await client.write.claimBatch([tenant, entity, source, routeId,
+    const receipt = await wait(await approveBatch(client,[tenant, entity, source, routeId,
       version ?? (await route(source)).version, count, id("PHYSICAL_RECEIPT")]));
     return { routeId, receipt };
   };
@@ -40,7 +57,7 @@ async function scenario(quantity = 1_000_000n) {
     return wait(await client.write.removeProduct([tenant, entity, routeId, count, expected, code, text, id("REMOVAL_EVIDENCE")]));
   };
   return { contract, publicClient, wallets, producer, a, b, shop, outsider, organizations, clients,
-    wait, tenant, role, entity, metadata, registration, product, route, root, claim, remove };
+    wait, tenant, role, entity, metadata, registration, product, route, root, claim, remove,approveBatch,approveSingle };
 }
 type Scenario = Awaited<ReturnType<typeof scenario>>;
 
@@ -133,14 +150,14 @@ describe("Product registration and immutable quantities", () => {
     await s.wait(await s.producer.write.createProduct([s.tenant, s.role, other, s.metadata, 100n]));
     const product = await s.contract.read.getProduct([s.tenant, other]);
     assert.notEqual(product.rootRouteId, s.root);
-    await assert.rejects(() => s.a.write.claimBatch([s.tenant, other, s.root, id("BAD_ROUTE"), 0n, 1n, id("EVIDENCE")]), /RouteNotFound/);
+    await assert.rejects(() => s.approveBatch(s.a,[s.tenant, other, s.root, id("BAD_ROUTE"), 0n, 1n, id("EVIDENCE")]), /RouteNotFound/);
     await assert.rejects(() => s.contract.read.getBatchRoute([s.tenant, other, s.root]), /RouteNotFound/);
     await conservation(s, [s.root]);
   });
 });
 
-describe("Direct physical batch receipt and routes", () => {
-  it("splits a source across independent businesses without memberships or sender proposals", async () => {
+describe("Owner-approved physical batch receipt and routes", () => {
+  it("splits a source across independent businesses with source-owner approval", async () => {
     const s = await scenario();
     assert.equal(await s.contract.read.isActiveTenantMember([s.tenant, s.organizations[1]]), false);
     const first = await s.claim(s.a, s.root, "A_PART", 600_000n);
@@ -209,14 +226,14 @@ describe("Direct physical batch receipt and routes", () => {
     await assert.rejects(() => s.claim(s.producer, s.root, "SELF", 1n), /InvalidCustodyRecipient/);
     await assert.rejects(() => s.claim(s.a, s.root, "ZERO", 0n), /InvalidQuantity/);
     await assert.rejects(() => s.claim(s.a, s.root, "OVERDRAW", 101n), /InsufficientQuantity/);
-    await assert.rejects(() => s.a.write.claimBatch([s.tenant, s.entity, s.root, id("NO_EVIDENCE"), 0n, 1n, zeroHash]), /InvalidEvidenceHash/);
-    await assert.rejects(() => s.a.write.claimBatch([s.tenant, s.entity, id("UNKNOWN"), id("MISSING"), 0n, 1n, id("E")]), /RouteNotFound/);
+    await assert.rejects(() => s.approveBatch(s.a,[s.tenant, s.entity, s.root, id("NO_EVIDENCE"), 0n, 1n, zeroHash]), /InvalidEvidenceHash/);
+    await assert.rejects(() => s.approveBatch(s.a,[s.tenant, s.entity, id("UNKNOWN"), id("MISSING"), 0n, 1n, id("E")]), /RouteNotFound/);
     await conservation(s, [s.root]);
   });
 
   it("rejects zero or reused child IDs without debiting the source", async () => {
     const s = await scenario(100n);
-    await assert.rejects(() => s.a.write.claimBatch([s.tenant, s.entity, s.root, zeroHash, 0n, 1n, id("E")]), /InvalidRouteId/);
+    await assert.rejects(() => s.approveBatch(s.a,[s.tenant, s.entity, s.root, zeroHash, 0n, 1n, id("E")]), /InvalidRouteId/);
     await s.claim(s.a, s.root, "A", 1n);
     await assert.rejects(() => s.claim(s.b, s.root, "A", 1n), /RouteAlreadyExists/);
     assert.equal((await s.route(s.root)).availableQuantity, 99n);
@@ -246,7 +263,7 @@ describe("Direct physical batch receipt and routes", () => {
 
   it("blocks legacy whole-product claim/close and custodian-based link bypasses", async () => {
     const s = await scenario();
-    await assert.rejects(() => s.a.write.claimCustody([s.tenant, s.entity, 0n, id("RECEIVED"), id("E")]), /BatchOperationRequired/);
+    await assert.rejects(() => s.approveSingle(s.a,0n,id("E")), /RouteNotFound/);
     await assert.rejects(() => s.producer.write.closeEntity([s.tenant, zeroHash, s.entity, id("SOLD"), id("E")]), /BatchOperationRequired/);
     await assert.rejects(() => s.contract.read.getCustodyVersion([s.tenant, s.entity]), /BatchOperationRequired/);
     const other = id("LINK_TARGET");
@@ -433,13 +450,13 @@ describe("Quantity removal, immutable reasons and termination", () => {
 });
 
 describe("Registered single products retain whole-item custody", () => {
-  it("uses quantity one with no batch route and transfers through the existing claim", async () => {
+  it("uses quantity one with no batch route and transfers with current-owner approval", async () => {
     const s = await scenario(1n);
     assert.equal((await s.product()).rootRouteId, zeroHash);
-    await s.wait(await s.a.write.claimCustody([s.tenant, s.entity, 0n, id("RECEIVED"), id("EVIDENCE")]));
+    await s.wait(await s.approveSingle(s.a));
     assert.equal((await s.contract.read.getEntity([s.tenant, s.entity])).currentCustodian, s.organizations[1]);
     assert.equal((await s.product()).availableQuantity, 1n);
-    await assert.rejects(() => s.a.write.claimBatch([s.tenant, s.entity, zeroHash, id("CHILD"), 0n, 1n, id("E")]), /NotBatchProduct/);
+    await assert.rejects(() => s.approveBatch(s.b,[s.tenant, s.entity, zeroHash, id("CHILD"), 1n, 1n, id("E")]), /InvalidRouteId/);
     await assert.rejects(() => s.remove(s.producer, zeroHash, 1n), /NotCurrentCustodian/);
     await assert.rejects(() => s.remove(s.a, zeroHash, 1n, reason.Sold, "", 0n), /StaleCustody/);
     await assert.rejects(() => s.remove(s.a, zeroHash, 2n), /InsufficientQuantity/);
@@ -453,7 +470,7 @@ describe("Registered single products retain whole-item custody", () => {
       eventName: "QuantityRemoved", fromBlock: receipt.blockNumber, toBlock: receipt.blockNumber });
     assert.equal(events[0].args.version, 2n);
     assert.equal(events[0].args.reasonText, "Parcel lost after receipt");
-    await assert.rejects(() => s.shop.write.claimCustody([s.tenant, s.entity, 2n, id("RECEIVED"), id("E")]), /EntityIsClosed/);
+    await assert.rejects(() => s.approveSingle(s.shop,2n,id("E")), /EntityIsClosed/);
   });
 
   it("requires the reasoned removal path for registered singles, preventing unaccounted legacy closure", async () => {

@@ -36,7 +36,7 @@ contract TraceForge is Ownable2Step {
         TRACE_RECORD,
         STATE_UPDATE,
         METADATA_UPDATE,
-        RESERVED_4, // Preserve generic capability indices. Receive requires no role.
+        RESERVED_4, // Preserve generic capability indices. Receipt approval is holder-authorized.
         ENTITY_LINK,
         ENTITY_CLOSE
     }
@@ -91,6 +91,39 @@ contract TraceForge is Ownable2Step {
     }
 
     enum RemovalReason { Sold, Lost, Damaged, Spoiled, Disposed, Other }
+
+    struct ReceiptApproval {
+        bytes32 tenantId;
+        bytes32 entityId;
+        bytes32 sourceRouteId;
+        bytes32 receivedRouteId;
+        bytes32 requestId;
+        address receiverWallet;
+        uint64 expectedVersion;
+        uint64 quantity;
+        uint64 expiresAt;
+        bytes32 evidenceHash;
+    }
+
+    mapping(bytes32 => bool) public approvedReceiptRequests;
+    error InvalidReceiptRequest();
+    error ReceiptRequestAlreadyApproved(bytes32 requestId);
+    error ReceiptRequestExpired(bytes32 requestId);
+
+    event ReceiptApproved(
+        bytes32 indexed requestId,
+        bytes32 indexed tenantId,
+        bytes32 indexed entityId,
+        bytes32 fromOrganizationId,
+        bytes32 toOrganizationId,
+        address requesterWallet,
+        address approverWallet,
+        bytes32 sourceRouteId,
+        bytes32 receivedRouteId,
+        uint64 quantity,
+        bytes32 evidenceHash,
+        uint64 timestamp
+    );
 
     uint64 public constant MAX_PRODUCT_QUANTITY = 9_007_199_254_740_991;
 
@@ -1186,39 +1219,59 @@ contract TraceForge is Ownable2Step {
         return removalTotals[tenantId][entityId][reason];
     }
 
-    /// Physical receipt is declared by the receiver; source approval is not required.
-    function claimBatch(
-        bytes32 tenantId, bytes32 entityId, bytes32 sourceRouteId, bytes32 receivedRouteId,
-        uint64 expectedVersion, uint64 quantity, bytes32 evidenceHash
-    ) external {
-        bytes32 receiver = _requireActiveBusinessWallet();
-        _requireTenantActive(tenantId);
-        _requireEntityOpen(tenantId, entityId);
-        _requireProduct(tenantId, entityId);
-        if (products[tenantId][entityId].initialQuantity == 1) revert NotBatchProduct();
-        if (evidenceHash == bytes32(0)) revert InvalidEvidenceHash();
+    /// Only the current holder can authorize a receiver's specific receipt request.
+    /// Requests are coordinated off-chain; an arbitrary receiver cannot debit stock.
+    function approveReceipt(ReceiptApproval calldata approval) external {
+        bytes32 sender = _requireActiveBusinessWallet();
+        _requireTenantActive(approval.tenantId);
+        _requireEntityOpen(approval.tenantId, approval.entityId);
+        if (approval.requestId == bytes32(0)) revert InvalidReceiptRequest();
+        if (approvedReceiptRequests[approval.requestId]) revert ReceiptRequestAlreadyApproved(approval.requestId);
+        if (approval.expiresAt < block.timestamp) revert ReceiptRequestExpired(approval.requestId);
+        if (approval.evidenceHash == bytes32(0)) revert InvalidEvidenceHash();
+        WalletBinding memory binding = walletBindings[approval.receiverWallet];
+        if (!binding.active || binding.organizationId == bytes32(0)) revert WalletNotBound(approval.receiverWallet);
+        _requireOrganizationActive(binding.organizationId);
+        bytes32 receiver = binding.organizationId;
+        if (products[approval.tenantId][approval.entityId].initialQuantity > 1) {
+            _approveBatch(approval, sender, receiver);
+        } else {
+            _approveCustody(approval, receiver);
+        }
+        approvedReceiptRequests[approval.requestId] = true;
+        emit ReceiptApproved(approval.requestId, approval.tenantId, approval.entityId,
+            sender, receiver, approval.receiverWallet, msg.sender, approval.sourceRouteId,
+            approval.receivedRouteId, approval.quantity, approval.evidenceHash, uint64(block.timestamp));
+    }
+
+    function _approveBatch(ReceiptApproval calldata approval, bytes32 sender, bytes32 receiver) internal {
+        bytes32 tenantId = approval.tenantId;
+        bytes32 entityId = approval.entityId;
+        bytes32 sourceRouteId = approval.sourceRouteId;
+        bytes32 receivedRouteId = approval.receivedRouteId;
         _requireRoute(tenantId, entityId, sourceRouteId);
         BatchRoute storage source = batchRoutes[tenantId][entityId][sourceRouteId];
-        if (receiver == source.organizationId) revert InvalidCustodyRecipient();
-        _requireRouteVersion(sourceRouteId, source.version, expectedVersion);
-        _requireQuantity(quantity, source.availableQuantity);
+        if (source.organizationId != sender) revert NotRouteOwner(sourceRouteId, sender);
+        if (receiver == sender) revert InvalidCustodyRecipient();
+        _requireRouteVersion(sourceRouteId, source.version, approval.expectedVersion);
+        _requireQuantity(approval.quantity, source.availableQuantity);
         if (receivedRouteId == bytes32(0)) revert InvalidRouteId();
         if (batchRoutes[tenantId][entityId][receivedRouteId].exists) revert RouteAlreadyExists(receivedRouteId);
 
-        source.availableQuantity -= quantity;
-        source.forwardedQuantity += quantity;
+        source.availableQuantity -= approval.quantity;
+        source.forwardedQuantity += approval.quantity;
         source.version += 1;
         uint64 timestamp = uint64(block.timestamp);
         batchRoutes[tenantId][entityId][receivedRouteId] = BatchRoute({
             organizationId: receiver, parentRouteId: sourceRouteId,
-            receivedQuantity: quantity, availableQuantity: quantity,
+            receivedQuantity: approval.quantity, availableQuantity: approval.quantity,
             forwardedQuantity: 0, removedQuantity: 0, version: 0,
             createdAt: timestamp, exists: true
         });
         entities[tenantId][entityId].updatedAt = timestamp;
         emit BatchReceived(tenantId, entityId, sourceRouteId, receivedRouteId,
-            source.organizationId, receiver, msg.sender, quantity, source.availableQuantity,
-            source.forwardedQuantity, source.version, evidenceHash, timestamp);
+            source.organizationId, receiver, msg.sender, approval.quantity, source.availableQuantity,
+            source.forwardedQuantity, source.version, approval.evidenceHash, timestamp);
     }
 
     /// Only the holder may remove quantity. The full written reason is immutable in the log.
@@ -1470,28 +1523,24 @@ contract TraceForge is Ownable2Step {
     // Custody transfer
     // ------------------------------------------------------------
 
-    /// The receiver declares physical receipt without a sender proposal or workspace role.
-    /// The version prevents replay of an old receipt after custody changes away and back.
-    function claimCustody(
-        bytes32 tenantId, bytes32 entityId, uint64 expectedVersion,
-        bytes32 eventType, bytes32 evidenceHash
-    ) external {
-        bytes32 receiver = _requireActiveBusinessWallet();
-        _requireTenantActive(tenantId);
-        _requireEntityOpen(tenantId, entityId);
+    function _approveCustody(ReceiptApproval calldata approval, bytes32 receiver) internal {
+        bytes32 tenantId = approval.tenantId;
+        bytes32 entityId = approval.entityId;
         _requireSingleCustodian(tenantId, entityId);
-        _validateTraceEvidence(eventType, evidenceHash);
+        _requireCurrentEntityCustodian(tenantId, entityId);
+        if (receiver == entities[tenantId][entityId].currentCustodian) revert InvalidCustodyRecipient();
+        if (approval.sourceRouteId != bytes32(0) || approval.receivedRouteId != bytes32(0)) revert InvalidRouteId();
+        _requireQuantity(approval.quantity, 1);
         uint64 version = custodyVersions[tenantId][entityId];
-        if (expectedVersion != version) revert StaleCustody(tenantId, entityId, expectedVersion, version);
+        if (approval.expectedVersion != version) revert StaleCustody(tenantId, entityId, approval.expectedVersion, version);
         Entity storage entity = entities[tenantId][entityId];
         bytes32 previous = entity.currentCustodian;
-        if (previous == receiver) revert InvalidCustodyRecipient();
         entity.currentCustodian = receiver;
         entity.updatedAt = uint64(block.timestamp);
         custodyVersions[tenantId][entityId] = version + 1;
         emit CustodyClaimed(tenantId, entityId, previous, receiver, msg.sender,
-            eventType, evidenceHash, version + 1, entity.updatedAt);
-        _emitTrace(tenantId, entityId, bytes32(0), eventType, evidenceHash);
+            keccak256("PRODUCT_RECEIVED"), approval.evidenceHash, version + 1, entity.updatedAt);
+        _emitTrace(tenantId, entityId, bytes32(0), keccak256("PRODUCT_RECEIVED"), approval.evidenceHash);
     }
 
     function getCustodyVersion(bytes32 tenantId, bytes32 entityId) external view returns (uint64) {
