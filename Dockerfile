@@ -11,8 +11,9 @@ FROM ${NODE_IMAGE}
 WORKDIR /app
 COPY --from=build /app/node_modules ./node_modules
 COPY --from=build /app/artifacts/contracts/TraceForge.sol/TraceForge.json ./contract.json
-COPY package.json ./
-COPY scripts/bootstrap.mjs ./scripts/bootstrap.mjs
+COPY package.json LICENSE ./
+LABEL org.opencontainers.image.licenses="MIT"
+COPY scripts/bootstrap.mjs scripts/public-bootstrap.mjs scripts/public-fees.mjs ./scripts/
 RUN chmod -R a+rX /app
 USER node
 CMD ["node", "scripts/bootstrap.mjs"]

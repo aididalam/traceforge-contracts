@@ -6,11 +6,12 @@
   "scripts": {
     "test": "hardhat test",
     "compile": "hardhat compile",
-    "clean": "hardhat clean"
+    "clean": "hardhat clean",
+    "test:public": "node --check scripts/bootstrap.mjs && node --test scripts/test-public-bootstrap.mjs"
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "type": "module",
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox-viem": "^5.0.7",

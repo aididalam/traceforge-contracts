@@ -2,6 +2,11 @@
 import {readFile,writeFile,stat} from 'node:fs/promises';
 import {createPublicClient,createWalletClient,defineChain,http,keccak256} from 'viem';
 import {privateKeyToAccount,generatePrivateKey} from 'viem/accounts';
+if(process.env.TRACEFORGE_NETWORK_KIND==='public') {
+ const {publicBootstrap}=await import('./public-bootstrap.mjs');
+ try { console.log(JSON.stringify(await publicBootstrap())); }
+ catch(error) { console.error(error.code||'Public deployment failed; check RPC, funding and fee limits.');process.exitCode=1; }
+} else {
 const directory='/data',recordFile=directory+'/contract-deployment.json',attemptFile=directory+'/contract-attempt.json';
 const artifact=JSON.parse(await readFile('/app/contract.json','utf8'));
 const chainId=Number(process.env.TRACEFORGE_CHAIN_ID);
@@ -31,3 +36,4 @@ const record={chainId,address:receipt.contractAddress,deploymentBlock:receipt.bl
 await writeFile(recordFile,JSON.stringify(record,null,2)+'\n',{mode:0o600,flag:'wx'});
 await writeFile(attemptFile,JSON.stringify({...attempt,signed:null})+'\n',{mode:0o600});
 console.log(JSON.stringify(record));
+}
